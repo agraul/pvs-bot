@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-
 import discord
 client = discord.Client()
 
 
 def assign_region(author, message):
     region = message.content.strip('!region')
-    client.send_message(message.channel, "You chose: %s " % region)
+    client.send_message(message.channel, "Hello, {}. You chose: {}".format(
+        author, region))
 
 
 @client.async_event

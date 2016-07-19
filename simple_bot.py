@@ -5,12 +5,44 @@ import discord
 client = discord.Client()
 
 @asyncio.coroutine
+# exeptions for abbreviations
 def add_dia(message):
     author = message.author
     role = discord.utils.get(message.server.roles, name='Diamond +')
     yield from client.send_message(message.channel, "You have been added to {}" .format(role))
     yield from client.add_roles(author, role)
 
+def remove_dia(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Diamond +')
+    yield from client.send_message(message.channel, "You have been removed from {}" .format(role))
+    yield from client.remove_roles(author, role)
+
+def add_plat(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Platinum')
+    yield from client.send_message(message.channel, "You have been added to {}" .format(role))
+    yield from client.add_roles(author, role)
+
+def remove_plat(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Platinum')
+    yield from client.send_message(message.channel, "You have been removed from {}" .format(role))
+    yield from client.remove_roles(author, role)
+
+def add_supp(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Support')
+    yield from client.send_message(message.channel, "You have been added to {}" .format(role))
+    yield from client.add_roles(author, role)
+
+def remove_plat(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Support')
+    yield from client.send_message(message.channel, "You have been removed from {}" .format(role))
+    yield from client.remove_roles(author, role)
+
+# general role adding / removing
 def add_role(message):
     author = message.author
     content = message.content.strip('+!')
@@ -68,10 +100,34 @@ def remove_role(message):
 @client.event
 @asyncio.coroutine
 def on_message(message):
-    if message.content.startswith('+!dia'):
+    if message.content.startswith('?!roles'):
+        yield from client.send_message(message.channel, "Here is a list of available roles: 'NA', 'EUW' , 'EUNE', 'OCE', 'LAS', 'LAN', 'BR', 'Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Top', 'Jungle', 'Mid', 'ADC', 'Support'."
+    elif messsage.content.startswith('?!hepl'):
+        yield from client.send_message(message.channel, "You can add / remove roles by typig +!role or -!role and substituting 'role' with the desired role. See ?!roles for a list of available roles."
+# special role manipulation calls
+    elif message.content.startswith('+!dia'):
         yield from add_dia(message)
     elif message.content.startswith('+!Diamond +'):
         yield from add_dia(message)
+    elif message.content.startswith('+!diamond +'):
+        yield from add_dia(message)
+    elif message.content.startswith('+!plat'):
+        yield from add_plat(message)
+    elif message.content.startswith('+!supp'):
+        yield from add_supp(message)
+
+    elif message.content.startswith('-!dia'):
+        yield from remove_dia(message)
+    elif message.content.startswith('-!Diamond +'):
+        yield from remove_dia(message)
+    elif message.content.startswith('-!diamond +'):
+        yield from remove_dia(message)
+    elif message.content.startswith('-!plat'):
+        yield from remove_plat(message)
+    elif message.content.startswith('-!supp'):
+        yield from remove_supp(message)
+
+# general role manipulation calls
     elif message.content.startswith('+!'):
         yield from add_role(message)
     elif message.content.startswith('-!'):

@@ -101,15 +101,13 @@ def remove_role(message):
 @asyncio.coroutine
 def on_message(message):
     if message.content.startswith('?!roles'):
-        yield from client.send_message(message.channel, "Here is a list of available roles: 'NA', 'EUW' , 'EUNE', 'OCE', 'LAS', 'LAN', 'BR', 'Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Top', 'Jungle', 'Mid', 'ADC', 'Support'."
-    elif messsage.content.startswith('?!hepl'):
-        yield from client.send_message(message.channel, "You can add / remove roles by typig +!role or -!role and substituting 'role' with the desired role. See ?!roles for a list of available roles."
+        yield from client.send_message(message.channel, "Here is a list of available roles: 'NA', 'EUW' , 'EUNE', 'OCE', 'LAS', 'LAN', 'BR', 'Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Top', 'Jungle', 'Mid', 'ADC', 'Support'.")
+    elif message.content.startswith('?!help'):
+        yield from client.send_message(message.channel, "You can add / remove roles by typig +!role or -!role and substituting 'role' with the desired role. See ?!roles for a list of available roles.")
 # special role manipulation calls
     elif message.content.startswith('+!dia'):
         yield from add_dia(message)
     elif message.content.startswith('+!Diamond +'):
-        yield from add_dia(message)
-    elif message.content.startswith('+!diamond +'):
         yield from add_dia(message)
     elif message.content.startswith('+!plat'):
         yield from add_plat(message)
@@ -119,8 +117,6 @@ def on_message(message):
     elif message.content.startswith('-!dia'):
         yield from remove_dia(message)
     elif message.content.startswith('-!Diamond +'):
-        yield from remove_dia(message)
-    elif message.content.startswith('-!diamond +'):
         yield from remove_dia(message)
     elif message.content.startswith('-!plat'):
         yield from remove_plat(message)

@@ -36,7 +36,7 @@ def add_supp(message):
     yield from client.send_message(message.channel, "You have been added to {}" .format(role))
     yield from client.add_roles(author, role)
 
-def remove_plat(message):
+def remove_supp(message):
     author = message.author
     role = discord.utils.get(message.server.roles, name='Support')
     yield from client.send_message(message.channel, "You have been removed from {}" .format(role))

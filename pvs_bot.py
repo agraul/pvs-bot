@@ -129,4 +129,4 @@ def on_message(message):
     elif message.content.startswith('-!'):
         yield from remove_role(message)
 
-client.run('MTk5NDY2MzA2ODc2MDgwMTI4.Cm7m3A.esoojhdM2CvZ4Gb8AynGKSLnlJQ')
+client.run('Token')

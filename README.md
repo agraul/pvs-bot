@@ -1,1 +1,1 @@
-# simple-bot
+# Discord bot for PvS

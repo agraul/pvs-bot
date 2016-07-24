@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import asyncio
+import asyncio # for coroutine functions (discord api needs it)
 import discord
 client = discord.Client()
 
 @asyncio.coroutine
-# exeptions for abbreviations
+# manual role management for abbreviations
 def add_dia(message):
     author = message.author
     role = discord.utils.get(message.server.roles, name='Diamond +')
@@ -42,7 +42,7 @@ def remove_supp(message):
     yield from client.send_message(message.channel, "You have been removed from {}" .format(role))
     yield from client.remove_roles(author, role)
 
-# general role adding / removing
+# look for role in message in 3 different formats and add author to it.
 def add_role(message):
     author = message.author
     content = message.content.strip('+!')
@@ -69,7 +69,7 @@ def add_role(message):
 
     else:
         yield from client.send_message(message.channel, "Please enter a valid role. See ?!roles for a list of available options.")
-
+# look for role in message in 3 different formats and remove it.
 def remove_role(message):
     author = message.author
     content = message.content.strip('-!')
@@ -104,10 +104,8 @@ def on_message(message):
         yield from client.send_message(message.channel, "Here is a list of available roles: 'NA', 'EUW' , 'EUNE', 'OCE', 'LAS', 'LAN', 'BR', 'Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Top', 'Jungle', 'Mid', 'ADC', 'Support'.")
     elif message.content.startswith('?!help'):
         yield from client.send_message(message.channel, "You can add / remove roles by typig +!role or -!role and substituting 'role' with the desired role. See ?!roles for a list of available roles.")
-# special role manipulation calls
+# abbreviations
     elif message.content.startswith('+!dia'):
-        yield from add_dia(message)
-    elif message.content.startswith('+!Diamond +'):
         yield from add_dia(message)
     elif message.content.startswith('+!plat'):
         yield from add_plat(message)
@@ -116,14 +114,12 @@ def on_message(message):
 
     elif message.content.startswith('-!dia'):
         yield from remove_dia(message)
-    elif message.content.startswith('-!Diamond +'):
-        yield from remove_dia(message)
     elif message.content.startswith('-!plat'):
         yield from remove_plat(message)
     elif message.content.startswith('-!supp'):
         yield from remove_supp(message)
 
-# general role manipulation calls
+# general 
     elif message.content.startswith('+!'):
         yield from add_role(message)
     elif message.content.startswith('-!'):

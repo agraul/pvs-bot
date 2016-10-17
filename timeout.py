@@ -5,6 +5,7 @@ import asyncio
 import id
 
 current_roles = {}
+client = discord.Client()
 
 
 @asyncio.coroutine
@@ -20,7 +21,7 @@ def release_from_timeout(message):  # probably wrong replace function
     target = message.content[7:].strip()
     target_member = discord.utils.get(message.server.members, name=target)
     yield from client.replace_roles(target_member,
-                                    *current_roles.keys(target_member))
+                                    *current_roles[target_member])
 
 
 @asyncio.coroutine
@@ -30,3 +31,5 @@ def on_message(message):
         yield from send_to_timeout(message)
     elif message.content.startswith('!timein'):
         yield from release_from_timeout(message)
+
+client.run(id.token2())

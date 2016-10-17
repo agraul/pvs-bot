@@ -702,4 +702,4 @@ def on_message(message):
     elif message.content.startswith('!verify'):
         yield from verify(message)
 
-client.run(id.token())
+client.run(id.token1())

@@ -184,7 +184,11 @@ def add_role(message):
         roles = author.roles
         l = [role]
         vlfag = True
-
+    elif message.content[2:].lower().startswith('challenger'):
+        role = discord.utils.get(message.server.roles, name='Challenger')
+        roles = author.roles
+        l = [role]
+        vlfag = True
 
     if vflag:
         for r in roles:
@@ -197,9 +201,36 @@ def add_role(message):
     yield from client.send_message(message.channel,
                                    "You have been added to {}".format(role))
 
-def del_support(message):
+
+def del_role(message):
     author = message.author
-    role = discord.utils.get(message.server.roles, name='Support')
+    if message.content[2:].lower().startswith('support'):
+        role = discord.utils.get(message.server.roles, name='Support')
+    elif message.content[2:].lower().startswith('adc'):
+        role = discord.utils.get(message.server.roles, name='ADC')
+    elif message.content[2:].lower().startswith('mid'):
+        role = discord.utils.get(message.server.roles, name='Mid')
+    elif message.content[2:].lower().startswith('top'):
+        role = discord.utils.get(message.server.roles, name='Top')
+    elif message.content[2:].lower().startswith('jungle'):
+        role = discord.utils.get(message.server.roles, name='Jungle')
+    elif message.content[2:].lower().startswith('bronze'):
+        role = discord.utils.get(message.server.roles, name='Bronze')
+    elif message.content[2:].lower().startswith('silver'):
+        role = discord.utils.get(message.server.roles, name='Silver')
+    elif message.content[2:].lower().startswith('gold'):
+        role = discord.utils.get(message.server.roles, name='Gold')
+    elif message.content[2:].lower().startswith('platinum'):
+        role = discord.utils.get(message.server.roles, name='Platinum')
+    elif message.content[2:].lower().startswith('diamond'):
+        role = discord.utils.get(message.server.roles, name='Diamond')
+    elif message.content[2:].lower().startswith('masters'):
+        role = discord.utils.get(message.server.roles, name='Masters')
+    elif message.content[2:].lower().startswith('challenger'):
+        role = discord.utils.get(message.server.roles, name='Challenger')
+    elif message.content[2:].lower().startswith('coach'):
+        role = discord.utils.get(message.server.roles, name='Coach')
+
     yield from client.send_message(message.channel,
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
@@ -226,18 +257,7 @@ def del_bronze(message):
     yield from client.remove_roles(author, role)
 
 
-def add_silver(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Silver')
-    roles = message.author.roles
-    l = [role]
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
-    yield from client.send_message(message.channel,
                                    "You have been added to {}".format(role))
-
 
 def del_silver(message):
     author = message.author
@@ -246,18 +266,6 @@ def del_silver(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
-
-def add_gold(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Gold')
-    roles = message.author.roles
-    l = [role]
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
 
 
 def del_gold(message):
@@ -268,18 +276,6 @@ def del_gold(message):
     yield from client.remove_roles(author, role)
 
 
-def add_platinum(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Platinum')
-    roles = message.author.roles
-    l = [role]
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-
 
 def del_platinum(message):
     author = message.author
@@ -288,18 +284,6 @@ def del_platinum(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
-
-def add_diamond(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond')
-    roles = message.author.roles
-    l = [role]
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
 
 
 def del_diamond(message):

@@ -148,75 +148,30 @@ def add_role(message):
         role = discord.utils.get(message.server.roles, name='Support')
     elif message.content[2:].lower().startswith('adc'):
         role = discord.utils.get(message.server.roles, name='ADC')
+    elif message.content[2:].lower().startswith('mid'):
+        role = discord.utils.get(message.server.roles, name='Mid')
+    elif message.content[2:].lower().startswith('top'):
+        role = discord.utils.get(message.server.roles, name='Top')
+    elif message.content[2:].lower().startswith('jungle'):
+        role = discord.utils.get(message.server.roles, name='Jungle')
+    elif message.content[2:].lower().startswith('bronze'):
+        role = discord.utils.get(message.server.roles, name='Bronze')
+        roles = author.roles
+        l = [role]
+        vflag = True
 
+
+    if vflag:
+    for r in roles:
+        if r.name != "Verified":
+            l.append(discord.utils.get(message.server.roles, name=r.name))
+    yield from client.replace_roles(message.author, *l)
+    yield from client.send_message(message.channel,
+                                   "You have been added to {}".format(role))
 
 def del_support(message):
     author = message.author
     role = discord.utils.get(message.server.roles, name='Support')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_adc(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='ADC')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_adc(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='ADC')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_mid(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Mid')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_mid(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Mid')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_top(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Top')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_top(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Top')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_jungle(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Jungle')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_jungle(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Jungle')
     yield from client.send_message(message.channel,
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)

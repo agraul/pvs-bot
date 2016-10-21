@@ -159,13 +159,41 @@ def add_role(message):
         roles = author.roles
         l = [role]
         vflag = True
+    elif message.content[2:].lower().startswith('silver'):
+        role = discord.utils.get(message.server.roles, name='Silver')
+        roles = author.roles
+        l = [role]
+        vlfag = True:
+    elif message.content[2:].lower().startswith('gold'):
+        role = discord.utils.get(message.server.roles, name='Gold')
+        roles = author.roles
+        l = [role]
+        vlfag = True
+    elif message.content[2:].lower().startswith('platinum'):
+        role = discord.utils.get(message.server.roles, name='Platinum')
+        roles = author.roles
+        l = [role]
+        vlfag = True
+    elif message.content[2:].lower().startswith('diamond'):
+        role = discord.utils.get(message.server.roles, name='Diamond')
+        roles = author.roles
+        l = [role]
+        vlfag = True
+    elif message.content[2:].lower().startswith('masters'):
+        role = discord.utils.get(message.server.roles, name='Masters')
+        roles = author.roles
+        l = [role]
+        vlfag = True
 
 
     if vflag:
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
+        for r in roles:
+            if r.name != "Verified":
+                l.append(discord.utils.get(message.server.roles, name=r.name))
+        yield from client.replace_roles(author, *l)
+    else:
+        yield from client.add_roles(author, role)
+
     yield from client.send_message(message.channel,
                                    "You have been added to {}".format(role))
 

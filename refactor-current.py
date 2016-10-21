@@ -98,34 +98,6 @@ class RankGetter(object):
         else:
             return "Error"
 
-"""    #Gets rank based on author
-    def update_account(self,name,author,region):
-        try:
-            self.region = region.lower()
-            acc = self._get_linked_account(name,author,self.region)
-            return self._get_rank(acc[1],acc[2])
-        except:
-            return "Error. Account was not properly linked, or the command was "
-            "mistyped. Make sure to type '!update SUMMONERNAME,REGION'"
-
-    #If the rune page name is correct, save the author's name, summoner name, "
-    "and region in that order to linkedAccounts.txt
-    def link_account(self,name,author,region):
-        self.region = region.lower()
-        id = self._get_summoner_id(name,self.region)
-        runeName = self._get_rune_name(id,self.region)
-        if runeName == "Plats vs Silvers":
-            f = open('linkedAccounts.txt','a')
-            f.write(author.lower() + ',' + str(id) + "," + self.region.lower()
-            + '\n')
-            f.close()
-            return "Account linked. Type '!update SummonerName,RegionID' to "
-            "have your rank set"
-        else:
-            return "Error. Your first rune page must be named "
-            "'Plats vs Silvers'. Instead it is '" + runeName + "'"
-"""
-
 ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
          "Challenger"]
 rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
@@ -167,76 +139,15 @@ def verify(message):
         yield from client.send_message(message.channel,
                                        "Invalid format. Please type '!verify "
                                        "Summoner Name,Region ID'")
-"""def link_account(message):
-    try:
-        #Expected message format: !link SUMMONERNAME,REGION
-        author = str(message.author)
-        content = message.content[6:].split(',')
-        success = rg.link_account(content[0],author,content[1])
-        if success == "Account linked. Type '!update SummonerName,RegionID' "
-        "to have your rank set":
-            #role =  #If the account exists and everything succeeds, then add "
-            "the region as a tag
-            try:
-                yield from client.add_roles(message.author,
-                discord.utils.get(message.server.roles,
-                name=content[1].upper()))
-            except:
-                print('Failed')
-        yield from client.send_message(message.channel, success)
-    except:
-        yield from client.send_message(message.channel,
-        "Mistake in format, or summoner not found on that region. Please type "
-        "'!link SUMMONERNAME,REGIONID'. Type '?!regions' if you do not know "
-        "your region ID")
-
-def update_account(message):
-    try:
-        #Expected message format: !update SUMMONERNAME,REGION
-        author = str(message.author).lower()
-        content = message.content[8:].split(',')
-        success = rg.update_account(content[0],author,content[1])
-        role = discord.utils.get(message.server.roles, name=success)
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Bronze'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Silver'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Gold'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Platinum'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Diamond'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Masters'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Challenger'))
-        if success == "Unranked":
-            yield from client.send_message(message.channel,
-            "Your account is properly linked, but you aren't ranked in "
-            "dynamic queue yet")
-            yield from client.add_roles(message.author, discord.utils.get
-            (message.server.roles, name='Verified'))
-        else:
-            yield from client.add_roles(message.author,role)
-            yield from client.send_message(message.channel,
-            "You have been added to {}".format(role))
-            yield from client.add_roles(message.author,
-            discord.utils.get(message.server.roles, name='Verified'))
-    except:
-        yield from client.send_message(message.channel,
-        "Error. Account was not properly linked, or the command was mistyped. "
-        "Make sure to type '!update SUMMONERNAME,REGIONID'. Type '?!regions' "
-        "if you do not know your region ID")
-"""
 
 
-def add_support(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Support')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
+
+def add_role(message):
+    author = messag.author
+    if message.content[2:].lower().startswith('support'):
+        role = discord.utils.get(message.server.roles, name='Support')
+    elif message.content[2:].lower().startswith('adc'):
+        role = discord.utils.get(message.server.roles, name='ADC')
 
 
 def del_support(message):

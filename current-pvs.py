@@ -308,7 +308,7 @@ def del_platinum(message):
 
 def add_diamond(message):
     author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond')
+    role = discord.utils.get(message.server.roles, name='Diamond +')
     roles = message.author.roles
     l = [role]
     for r in roles:
@@ -321,7 +321,7 @@ def add_diamond(message):
 
 def del_diamond(message):
     author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond')
+    role = discord.utils.get(message.server.roles, name='Diamond +')
     yield from client.send_message(message.channel,
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
@@ -457,7 +457,7 @@ def del_china(message):
 
 def add_coach(message):
     author = message.author
-    required_roles = ['Diamond', 'Platinum', 'Masters', 'Challenger']
+    required_roles = ['Diamond +', 'Platinum', 'Masters', 'Challenger']
     role = discord.utils.get(message.server.roles, name='Coach')
     x = 0
     for r in author.roles:
@@ -650,14 +650,14 @@ def on_message(message):
         yield from add_platinum(message)
     elif message.content.lower().startswith('-!platinum'):
         yield from del_platinum(message)
-    elif message.content.lower().startswith('+!diamond'):
+    elif message.content.lower().startswith('+!diamond +'):
         yield from add_diamond(message)
-    elif message.content.lower().startswith('-!diamond'):
+    elif message.content.lower().startswith('-!diamond +'):
         yield from del_diamond(message)
-    elif message.content.lower().startswith('-!masters'):
-        yield from del_masters(message)
-    elif message.content.lower().startswith('-!challenger'):
-        yield from del_challenger(message)
+    elif message.content.lower().startswith('-!diamond+'):
+        yield from del_diamond(message)
+    elif message.content.lower().startswith('+!diamond+'):
+        yield from add_diamond(message)
 
 # Servers
     elif message.content.lower().startswith('+!euw'):

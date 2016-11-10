@@ -5,6 +5,7 @@ import requests
 import id
 
 client = discord.Client()
+filepath = "C:\PlatsVsSilversChatlogs"
 
 URL = {
     'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
@@ -98,37 +99,10 @@ class RankGetter(object):
         else:
             return "Error"
 
-"""    #Gets rank based on author
-    def update_account(self,name,author,region):
-        try:
-            self.region = region.lower()
-            acc = self._get_linked_account(name,author,self.region)
-            return self._get_rank(acc[1],acc[2])
-        except:
-            return "Error. Account was not properly linked, or the command was "
-            "mistyped. Make sure to type '!update SUMMONERNAME,REGION'"
-
-    #If the rune page name is correct, save the author's name, summoner name, "
-    "and region in that order to linkedAccounts.txt
-    def link_account(self,name,author,region):
-        self.region = region.lower()
-        id = self._get_summoner_id(name,self.region)
-        runeName = self._get_rune_name(id,self.region)
-        if runeName == "Plats vs Silvers":
-            f = open('linkedAccounts.txt','a')
-            f.write(author.lower() + ',' + str(id) + "," + self.region.lower()
-            + '\n')
-            f.close()
-            return "Account linked. Type '!update SummonerName,RegionID' to "
-            "have your rank set"
-        else:
-            return "Error. Your first rune page must be named "
-            "'Plats vs Silvers'. Instead it is '" + runeName + "'"
-"""
-
 ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
          "Challenger"]
 rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
+
 
 
 @asyncio.coroutine
@@ -167,69 +141,6 @@ def verify(message):
         yield from client.send_message(message.channel,
                                        "Invalid format. Please type '!verify "
                                        "Summoner Name,Region ID'")
-"""def link_account(message):
-    try:
-        #Expected message format: !link SUMMONERNAME,REGION
-        author = str(message.author)
-        content = message.content[6:].split(',')
-        success = rg.link_account(content[0],author,content[1])
-        if success == "Account linked. Type '!update SummonerName,RegionID' "
-        "to have your rank set":
-            #role =  #If the account exists and everything succeeds, then add "
-            "the region as a tag
-            try:
-                yield from client.add_roles(message.author,
-                discord.utils.get(message.server.roles,
-                name=content[1].upper()))
-            except:
-                print('Failed')
-        yield from client.send_message(message.channel, success)
-    except:
-        yield from client.send_message(message.channel,
-        "Mistake in format, or summoner not found on that region. Please type "
-        "'!link SUMMONERNAME,REGIONID'. Type '?!regions' if you do not know "
-        "your region ID")
-
-def update_account(message):
-    try:
-        #Expected message format: !update SUMMONERNAME,REGION
-        author = str(message.author).lower()
-        content = message.content[8:].split(',')
-        success = rg.update_account(content[0],author,content[1])
-        role = discord.utils.get(message.server.roles, name=success)
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Bronze'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Silver'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Gold'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Platinum'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Diamond'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Masters'))
-        yield from client.remove_roles(message.author,
-        discord.utils.get(message.server.roles, name='Challenger'))
-        if success == "Unranked":
-            yield from client.send_message(message.channel,
-            "Your account is properly linked, but you aren't ranked in "
-            "dynamic queue yet")
-            yield from client.add_roles(message.author, discord.utils.get
-            (message.server.roles, name='Verified'))
-        else:
-            yield from client.add_roles(message.author,role)
-            yield from client.send_message(message.channel,
-            "You have been added to {}".format(role))
-            yield from client.add_roles(message.author,
-            discord.utils.get(message.server.roles, name='Verified'))
-    except:
-        yield from client.send_message(message.channel,
-        "Error. Account was not properly linked, or the command was mistyped. "
-        "Make sure to type '!update SUMMONERNAME,REGIONID'. Type '?!regions' "
-        "if you do not know your region ID")
-"""
-
 
 def add_support(message):
     author = message.author
@@ -576,10 +487,93 @@ def del_coach(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
+'''async def savelogs(message):
+    logs = []
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    try:
+        number = int(message.content.strip('!savelogs '))
+    except:
+        print('Invalid number')
+    async for log in client.logs_from(message.channel, limit=number):
+        logs.append(log)
+    f = open('C:\\PlatsVsSilversChatlogs\\chatlog.txt', 'w')
+    for l in reversed(logs):
+        f.write(l.content + "\n")
+    f.close()
+    client.send_file(message.channel, 'C:\\PlatsVsSilversChatlogs\\chatlog.txt', content='Here is the requested chatlog', tts=False)'''
+
+async def getlogs(message):
+    print('Getting logs')
+    logs = []
+    command, channel, number = message.content.split(' ')
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    channel = channel.lower()
+    try:
+        num = int(number)
+    except:
+        print('Bad Number')
+    async for log in client.logs_from(chatlog, limit=num):
+        content = log.content
+        if content.startswith("SENT MESSAGE: " + channel) or content.startswith("DELETED: " + channel) or content.startswith("EDITTED: " + channel):
+            logs.append(log)
+    return reversed(logs)
+
+
+@client.event
+@asyncio.coroutine
+def on_member_update(before, after): #Changes in
+    nb = before.display_name
+    na = after.display_name
+    chatlog = discord.utils.get(before.server.channels, name='chatlog')
+    if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
+        yield from client.send_message(chatlog, "NICKNAME CHANGED: " + str(before) + "\n\tFrom " + nb + " to " + na)
+
+
+@client.event
+@asyncio.coroutine
+def on_member_join(member):
+    chatlog = discord.utils.get(member.server.channels, name='chatlog')
+    yield from client.send_message(chatlog, "JOINED: " + str(member))
+
+@client.event
+@asyncio.coroutine
+def on_member_remove(member):
+    chatlog = discord.utils.get(member.server.channels, name='chatlog')
+    yield from client.send_message(chatlog, "LEFT: " + str(member))
+
+@client.event
+@asyncio.coroutine
+def on_message_delete(message):
+    print("Testing")
+    channel = message.channel
+    content = message.content
+    author = message.author
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    if(str(channel) != 'chatlog'):
+        yield from client.send_message(chatlog,"DELETED: " + str(channel) + ": " + str(author) + ": " + str(content))
+
+@client.event
+@asyncio.coroutine
+def on_message_edit(before, after):
+    print("Testing")
+    channel = before.channel
+    contentb = before.content
+    contenta = after.content
+    author = before.author
+    chatlog = discord.utils.get(before.server.channels, name='chatlog')
+    if(str(channel) != 'chatlog'):
+        yield from client.send_message(chatlog,"EDITTED:\n\tBEFORE: " + str(channel) + ": " + str(author) + ": " + str(contentb) + "\n\tAFTER: " + str(channel) + ": " + str(author) + ": " + str(contenta))
 
 @client.event
 @asyncio.coroutine
 def on_message(message):
+    #Logs all
+    channel = message.channel
+    content = message.content
+    author = message.author
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    if(str(channel) != 'chatlog'):
+        yield from client.send_message(chatlog,"SENT MESSAGE: " + str(channel) + ": " + str(author) + ": " + str(content))
     if message.content.startswith('?!roles'):
         yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"
@@ -695,11 +689,14 @@ def on_message(message):
     elif message.content.lower().startswith('-!china'):
         yield from del_china(message)
 # Update/link account
-    # elif message.content.startswith('!update'):
-        #  yield from update_account(message)
-    # elif message.content.startswith('!link'):
-        # yield from link_account(message)
     elif message.content.startswith('!verify'):
         yield from verify(message)
+'''# Admin Commands
+    elif message.content.startswith('!getlogs'):
+        logs = yield from getlogs(message)
+        chatlog = discord.utils.get(message.server.channels, name='chatlog')
+        for log in logs:
+            yield from client.send_message(chatlog, log.content)
+        yield from client.send_message(chatlog, 'I am now donezo')'''
 
 client.run(id.token1())

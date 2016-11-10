@@ -517,18 +517,18 @@ async def getlogs(message):
         if content.startswith("SENT MESSAGE: " + channel) or content.startswith("DELETED: " + channel) or content.startswith("EDITTED: " + channel):
             logs.append(log)
     return reversed(logs)
-        
-        
+
+
 @client.event
 @asyncio.coroutine
-def on_member_update(before, after): #Changes in 
+def on_member_update(before, after): #Changes in
     nb = before.display_name
     na = after.display_name
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
         yield from client.send_message(chatlog, "NICKNAME CHANGED: " + str(before) + "\n\tFrom " + nb + " to " + na)
-        
-        
+
+
 @client.event
 @asyncio.coroutine
 def on_member_join(member):
@@ -536,11 +536,11 @@ def on_member_join(member):
     yield from client.send_message(chatlog, "JOINED: " + str(member))
 
 @client.event
-@asyncio.coroutine    
+@asyncio.coroutine
 def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
     yield from client.send_message(chatlog, "LEFT: " + str(member))
-    
+
 @client.event
 @asyncio.coroutine
 def on_message_delete(message):
@@ -551,7 +551,7 @@ def on_message_delete(message):
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
         yield from client.send_message(chatlog,"DELETED: " + str(channel) + ": " + str(author) + ": " + str(content))
-        
+
 @client.event
 @asyncio.coroutine
 def on_message_edit(before, after):
@@ -567,7 +567,7 @@ def on_message_edit(before, after):
 @client.event
 @asyncio.coroutine
 def on_message(message):
-    #Logs all 
+    #Logs all
     channel = message.channel
     content = message.content
     author = message.author
@@ -698,5 +698,5 @@ def on_message(message):
         for log in logs:
             yield from client.send_message(chatlog, log.content)
         yield from client.send_message(chatlog, 'I am now donezo')'''
-        
-client.run(id.token())
+
+client.run(id.token1())

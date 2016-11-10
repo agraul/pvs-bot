@@ -2,6 +2,7 @@
 import asyncio
 import discord
 import requests
+import datetime
 import id
 
 client = discord.Client()
@@ -487,38 +488,40 @@ def del_coach(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
-'''async def savelogs(message):
+async def savelogs(message):
     logs = []
+    command, channel, numberString = message.content.split(' ')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
-    try:
-        number = int(message.content.strip('!savelogs '))
-    except:
-        print('Invalid number')
-    async for log in client.logs_from(message.channel, limit=number):
-        logs.append(log)
-    f = open('C:\\PlatsVsSilversChatlogs\\chatlog.txt', 'w')
-    for l in reversed(logs):
-        f.write(l.content + "\n")
-    f.close()
-    client.send_file(message.channel, 'C:\\PlatsVsSilversChatlogs\\chatlog.txt', content='Here is the requested chatlog', tts=False)'''
-
-async def getlogs(message):
-    print('Getting logs')
-    logs = []
-    command, channel, number = message.content.split(' ')
-    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    s = ""
     channel = channel.lower()
     try:
-        num = int(number)
+        number = int(numberString)
+        async for log in client.logs_from(chatlog, limit=number):
+            if ("**" + channel + "**") in log.content:
+                logs.append(log)
+        for l in reversed(logs):
+            s += l.content + "\n"
+        return s
     except:
-        print('Bad Number')
-    async for log in client.logs_from(chatlog, limit=num):
-        content = log.content
-        if content.startswith("SENT MESSAGE: " + channel) or content.startswith("DELETED: " + channel) or content.startswith("EDITTED: " + channel):
-            logs.append(log)
-    return reversed(logs)
+        return s
+
+async def savelogs2(message):
+    logs = []
+    command, channel, numberString = message.content.split(' ')
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    s = ""
+    channel = channel.lower()
+    try:
+        number = int(numberString)
+        async for log in client.logs_from(chatlog, limit=number):
+            if ("**" + channel + "**") in log.content:
+                logs.append(log)
+        return reversed(logs)
+    except:
+        return logs
         
-        
+    
+    
 @client.event
 @asyncio.coroutine
 def on_member_update(before, after): #Changes in 
@@ -526,54 +529,58 @@ def on_member_update(before, after): #Changes in
     na = after.display_name
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
-        yield from client.send_message(chatlog, "NICKNAME CHANGED: " + str(before) + "\n\tFrom " + nb + " to " + na)
+        yield from client.send_message(chatlog, "`NICKNAME CHANGED` " + str(before) + "\n\tFrom " + nb + " to " + na)
         
         
 @client.event
 @asyncio.coroutine
 def on_member_join(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
-    yield from client.send_message(chatlog, "JOINED: " + str(member))
+    yield from client.send_message(chatlog, "`JOINED` " + str(member))
 
 @client.event
 @asyncio.coroutine    
 def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
-    yield from client.send_message(chatlog, "LEFT: " + str(member))
+    yield from client.send_message(chatlog, "`LEFT` " + str(member))
     
 @client.event
 @asyncio.coroutine
 def on_message_delete(message):
-    print("Testing")
     channel = message.channel
     content = message.content
     author = message.author
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-        yield from client.send_message(chatlog,"DELETED: " + str(channel) + ": " + str(author) + ": " + str(content))
+        yield from client.send_message(chatlog,"`DELETED` **" + str(channel) + "**: " + str(author) + ": " + str(content))
         
 @client.event
 @asyncio.coroutine
 def on_message_edit(before, after):
-    print("Testing")
     channel = before.channel
     contentb = before.content
     contenta = after.content
     author = before.author
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-        yield from client.send_message(chatlog,"EDITTED:\n\tBEFORE: " + str(channel) + ": " + str(author) + ": " + str(contentb) + "\n\tAFTER: " + str(channel) + ": " + str(author) + ": " + str(contenta))
+        yield from client.send_message(chatlog,"`EDITTED`\n\t`BEFORE` **" + str(channel) + "**: " + str(author) + ": " + str(contentb) + "\n\tAFTER: " + str(channel) + ": " + str(author) + ": " + str(contenta))
 
 @client.event
 @asyncio.coroutine
 def on_message(message):
-    #Logs all 
+    admin = discord.utils.get(message.server.roles, name='admin')
+    #Logs all messages
     channel = message.channel
-    content = message.content
+    content = message.content.strip('<')
     author = message.author
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')#('%a %b %d: %H:%M:%S')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-        yield from client.send_message(chatlog,"SENT MESSAGE: " + str(channel) + ": " + str(author) + ": " + str(content))
+            yield from client.send_message(chatlog,timestamp + " UTC `SENT` **" + str(channel) + "**: " + str(author) + ": " + str(content))
+
+    #Commands
+        
+#Help Commands
     if message.content.startswith('?!roles'):
         yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"
@@ -691,12 +698,19 @@ def on_message(message):
 # Update/link account
     elif message.content.startswith('!verify'):
         yield from verify(message)
-'''# Admin Commands
-    elif message.content.startswith('!getlogs'):
-        logs = yield from getlogs(message)
-        chatlog = discord.utils.get(message.server.channels, name='chatlog')
-        for log in logs:
-            yield from client.send_message(chatlog, log.content)
-        yield from client.send_message(chatlog, 'I am now donezo')'''
+# Admin Commands
+    elif message.content.startswith('!savelogs'):
+        if admin in message.author.roles:
+            logs = yield from savelogs(message)
+            if logs == "":
+                yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
+            else:
+                print(logs)
+                #Hello merK
+                #The string S is a string with all the relevent chatlogs in order, broken apart by new line characters
+                #If you instead want the raw list, use the method savelogs2 instead
+        else:
+            yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
         
 client.run(id.token())
+

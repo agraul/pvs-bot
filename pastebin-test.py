@@ -10,4 +10,6 @@ args = shlex.split(command_line)
 p = subprocess.Popen(args)
 link = pyperclip.paste
 '''
-subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b", "pastebin.com", "-i", "testfile.txt"], stdout=subprocess.PIPE)
+p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b",
+ "pastebin.com", "-i", "testfile.txt"], stdout=subprocess.PIPE)
+print(p)

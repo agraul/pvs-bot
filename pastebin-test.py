@@ -11,6 +11,6 @@ p = subprocess.Popen(args)
 link = pyperclip.paste
 '''
 p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b",
- "pastebin.com", "-i", "testfile.txt"])
+ "pastebin.com", "-i", "testfile.txt"], stdout=PIPE)
 p_result = p.stdout()
 print(p_result)

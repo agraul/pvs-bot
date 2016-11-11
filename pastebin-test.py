@@ -12,5 +12,5 @@ link = pyperclip.paste
 '''
 p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b",
  "pastebin.com", "-i", "testfile.txt"])
-p_result = p.CompletedProcess.stdout()
+p_result = p.stdout()
 print(p_result)

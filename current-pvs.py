@@ -712,4 +712,4 @@ def on_message(message):
         else:
             yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
 
-client.run(id.token())
+client.run(id.token1())

@@ -309,7 +309,7 @@ def del_platinum(message):
 
 def add_diamond(message):
     author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond +')
+    role = discord.utils.get(message.server.roles, name='Diamond')
     roles = message.author.roles
     l = [role]
     for r in roles:
@@ -322,7 +322,7 @@ def add_diamond(message):
 
 def del_diamond(message):
     author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond +')
+    role = discord.utils.get(message.server.roles, name='Diamond')
     yield from client.send_message(message.channel,
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
@@ -458,7 +458,7 @@ def del_china(message):
 
 def add_coach(message):
     author = message.author
-    required_roles = ['Diamond +', 'Platinum', 'Masters', 'Challenger']
+    required_roles = ['Diamond', 'Platinum', 'Masters', 'Challenger']
     role = discord.utils.get(message.server.roles, name='Coach')
     x = 0
     for r in author.roles:
@@ -521,6 +521,7 @@ async def savelogs2(message):
         return logs
 
 
+
 @client.event
 @asyncio.coroutine
 def on_member_update(before, after): #Changes in
@@ -529,6 +530,7 @@ def on_member_update(before, after): #Changes in
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
         yield from client.send_message(chatlog, "`NICKNAME CHANGED` " + str(before) + "\n\tFrom " + nb + " to " + na)
+
 
 
 @client.event
@@ -543,22 +545,24 @@ def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
     yield from client.send_message(chatlog, "`LEFT` " + str(member))
 
+
 @client.event
 @asyncio.coroutine
 def on_message_delete(message):
     channel = message.channel
-    content = message.content
+    content = message.content.replace('<@','< @')
     author = message.author
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
         yield from client.send_message(chatlog,"`DELETED` **" + str(channel) + "**: " + str(author) + ": " + str(content))
 
+
 @client.event
 @asyncio.coroutine
 def on_message_edit(before, after):
     channel = before.channel
-    contentb = before.content
-    contenta = after.content
+    contentb = before.content.replace('<@','< @')
+    contenta = after.content.replace('<@','< @')
     author = before.author
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
@@ -570,7 +574,7 @@ def on_message(message):
     admin = discord.utils.get(message.server.roles, name='admin')
     #Logs all messages
     channel = message.channel
-    content = message.content.strip('<')
+    content = message.content.replace('<@','< @')
     author = message.author
     timestamp = message.timestamp.strftime('%b %d: %H:%M')#('%a %b %d: %H:%M:%S')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
@@ -578,6 +582,7 @@ def on_message(message):
             yield from client.send_message(chatlog,timestamp + " UTC `SENT` **" + str(channel) + "**: " + str(author) + ": " + str(content))
 
     #Commands
+
 
 #Help Commands
     if message.content.startswith('?!roles'):
@@ -656,14 +661,14 @@ def on_message(message):
         yield from add_platinum(message)
     elif message.content.lower().startswith('-!platinum'):
         yield from del_platinum(message)
-    elif message.content.lower().startswith('+!diamond +'):
+    elif message.content.lower().startswith('+!diamond'):
         yield from add_diamond(message)
-    elif message.content.lower().startswith('-!diamond +'):
+    elif message.content.lower().startswith('-!diamond'):
         yield from del_diamond(message)
-    elif message.content.lower().startswith('-!diamond+'):
-        yield from del_diamond(message)
-    elif message.content.lower().startswith('+!diamond+'):
-        yield from add_diamond(message)
+    elif message.content.lower().startswith('-!masters'):
+        yield from del_masters(message)
+    elif message.content.lower().startswith('-!challenger'):
+        yield from del_challenger(message)
 
 # Servers
     elif message.content.lower().startswith('+!euw'):
@@ -711,5 +716,4 @@ def on_message(message):
                 #If you instead want the raw list, use the method savelogs2 instead
         else:
             yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
-
 client.run(id.token1())

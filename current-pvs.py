@@ -4,6 +4,7 @@ import discord
 import requests
 import datetime
 import id
+import subprocess
 
 client = discord.Client()
 filepath = "C:\PlatsVsSilversChatlogs"
@@ -521,6 +522,15 @@ async def savelogs2(message):
         return logs
 
 
+@asyncio.coroutine
+def upload_logs(logs):
+    p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b", "cxg.de",
+                        "|", logs], stdout=subprocess.PIPE,
+                       universal_newlines=True)
+    paste_link = p.stdout
+    admin_channel = discord.utils.get(message.server.channels, name='admin')
+    yield from client.send_message(admin_channel, "Here is the link:"
+                                   .format(paste_link))
 
 @client.event
 @asyncio.coroutine
@@ -710,7 +720,8 @@ def on_message(message):
             if logs == "":
                 yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
-                print(logs)
+                #print(logs)
+                upload_logs(logs)
                 #Hello merK
                 #The string S is a string with all the relevent chatlogs in order, broken apart by new line characters
                 #If you instead want the raw list, use the method savelogs2 instead

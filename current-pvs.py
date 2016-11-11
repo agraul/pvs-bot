@@ -523,9 +523,9 @@ async def savelogs2(message):
 
 
 @asyncio.coroutine
-def upload_logs(logs):
+def upload_logs(s):
     p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b", "cxg.de",
-                        "|", logs], stdout=subprocess.PIPE,
+                        "|", s], stdout=subprocess.PIPE,
                        universal_newlines=True)
     paste_link = p.stdout
     admin_channel = discord.utils.get(message.server.channels, name='admin')
@@ -721,7 +721,7 @@ def on_message(message):
                 yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 #print(logs)
-                upload_logs(logs)
+                upload_logs(s)
                 #Hello merK
                 #The string S is a string with all the relevent chatlogs in order, broken apart by new line characters
                 #If you instead want the raw list, use the method savelogs2 instead

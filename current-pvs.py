@@ -518,21 +518,9 @@ async def savelogs2(message):
                 logs.append(log)
         return reversed(logs)
     except:
-<<<<<<< HEAD
-        print('Bad Number')
-    async for log in client.logs_from(chatlog, limit=num):
-        content = log.content
-        if content.startswith("SENT MESSAGE: " + channel) or content.startswith("DELETED: " + channel) or content.startswith("EDITTED: " + channel):
-            logs.append(log)
-    return reversed(logs)
-
-
-=======
         return logs
 
 
-
->>>>>>> 85e63b5182a66d5263bd2379598986d18c6c4363
 @client.event
 @asyncio.coroutine
 def on_member_update(before, after): #Changes in
@@ -540,15 +528,9 @@ def on_member_update(before, after): #Changes in
     na = after.display_name
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
-<<<<<<< HEAD
-        yield from client.send_message(chatlog, "NICKNAME CHANGED: " + str(before) + "\n\tFrom " + nb + " to " + na)
-
-
-=======
         yield from client.send_message(chatlog, "`NICKNAME CHANGED` " + str(before) + "\n\tFrom " + nb + " to " + na)
 
 
->>>>>>> 85e63b5182a66d5263bd2379598986d18c6c4363
 @client.event
 @asyncio.coroutine
 def on_member_join(member):
@@ -559,13 +541,8 @@ def on_member_join(member):
 @asyncio.coroutine
 def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
-<<<<<<< HEAD
-    yield from client.send_message(chatlog, "LEFT: " + str(member))
-
-=======
     yield from client.send_message(chatlog, "`LEFT` " + str(member))
 
->>>>>>> 85e63b5182a66d5263bd2379598986d18c6c4363
 @client.event
 @asyncio.coroutine
 def on_message_delete(message):
@@ -574,13 +551,8 @@ def on_message_delete(message):
     author = message.author
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-<<<<<<< HEAD
-        yield from client.send_message(chatlog,"DELETED: " + str(channel) + ": " + str(author) + ": " + str(content))
-
-=======
         yield from client.send_message(chatlog,"`DELETED` **" + str(channel) + "**: " + str(author) + ": " + str(content))
 
->>>>>>> 85e63b5182a66d5263bd2379598986d18c6c4363
 @client.event
 @asyncio.coroutine
 def on_message_edit(before, after):
@@ -595,12 +567,8 @@ def on_message_edit(before, after):
 @client.event
 @asyncio.coroutine
 def on_message(message):
-<<<<<<< HEAD
-    #Logs all
-=======
     admin = discord.utils.get(message.server.roles, name='admin')
     #Logs all messages
->>>>>>> 85e63b5182a66d5263bd2379598986d18c6c4363
     channel = message.channel
     content = message.content.strip('<')
     author = message.author

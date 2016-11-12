@@ -532,11 +532,10 @@ def pastebin(title, content):  # used for posting a new paste
         api_paste_name=title,
         api_paste_code=content,
     )
-    paste_link = urllib.request.urlopen(PASTEBIN_URL,
+    return urllib.request.urlopen(PASTEBIN_URL,
                                         urllib.parse.urlencode(pastebin_vars)
                                         .encode('utf8')).read()
-    print("in function" + paste_link)
-    return paste_link
+
 
 @client.event
 @asyncio.coroutine
@@ -740,10 +739,9 @@ def on_message(message):
                 yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 # print(logs)
-                pastebin('Chatlog', logs)
-                admin_channel = discord.utils.get(message.server.channels, name='admin')
+                paste_link = pastebin('Chatlog', logs)
                 print(paste_link)
-                yield from client.send_message(admin_channel, "Here is the link:{}"
+                yield from client.send_message(message.server.channel, "Here is the link:{}"
                                                .format(paste_link))
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,

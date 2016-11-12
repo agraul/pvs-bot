@@ -535,6 +535,7 @@ def pastebin(title, content):  # used for posting a new paste
     paste_link = urllib.request.urlopen(PASTEBIN_URL,
                                         urllib.parse.urlencode(pastebin_vars)
                                         .encode('utf8')).read()
+    print("in function" + paste_link)
     return paste_link
 
 @client.event
@@ -741,6 +742,7 @@ def on_message(message):
                 # print(logs)
                 pastebin('Chatlog', logs)
                 admin_channel = discord.utils.get(message.server.channels, name='admin')
+                print(paste_link)
                 yield from client.send_message(admin_channel, "Here is the link:{}"
                                                .format(paste_link))
                 # Hello merK

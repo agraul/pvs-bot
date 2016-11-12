@@ -737,13 +737,12 @@ def on_message(message):
 # Admin Commands
     elif message.content.startswith('!savelogs'):
         if admin in message.author.roles:
-            logs = yield from savelogs(message)
+            logs = yield from savelogs2(message)
             if logs == "":
-                yield from client.send_message(message.channel, "The number you
-                 input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
+                yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 # print(logs)
-                pastebin(title=Chatlog, s)
+                pastebin(title=Chatlog, logs)
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,
                 # broken apart by new line characters

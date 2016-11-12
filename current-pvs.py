@@ -741,7 +741,7 @@ def on_message(message):
                 # print(logs)
                 pastebin('Chatlog', logs)
                 admin_channel = discord.utils.get(message.server.channels, name='admin')
-                yield from client.send_message(admin_channel, "Here is the link:"
+                yield from client.send_message(admin_channel, "Here is the link:{}"
                                                .format(paste_link))
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,

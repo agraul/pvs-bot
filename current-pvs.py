@@ -525,19 +525,16 @@ async def savelogs2(message):
 
 
 @asyncio.coroutine
-def pastebin(title, content, message):  # used for posting a new paste
+def pastebin(title, content):  # used for posting a new paste
     pastebin_vars = dict(
         api_option='paste',
         api_dev_key=PASTEBIN_KEY,
         api_paste_name=title,
         api_paste_code=content,
     )
-    paste_link = urllib.request.urlopen(PASTEBIN_URL,
+    return paste_link = urllib.request.urlopen(PASTEBIN_URL,
                                         urllib.parse.urlencode(pastebin_vars)
                                         .encode('utf8')).read()
-    admin_channel = discord.utils.get(message.server.channels, name='admin')
-    yield from client.send_message(admin_channel, "Here is the link:"
-                                   .format(paste_link))
 
 
 @client.event
@@ -742,7 +739,10 @@ def on_message(message):
                 yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 # print(logs)
-                pastebin('Chatlog', logs, message)
+                pastebin('Chatlog', logs)
+                admin_channel = discord.utils.get(message.server.channels, name='admin')
+                yield from client.send_message(admin_channel, "Here is the link:"
+                                               .format(paste_link))
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,
                 # broken apart by new line characters

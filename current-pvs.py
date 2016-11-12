@@ -532,10 +532,10 @@ def pastebin(title, content):  # used for posting a new paste
         api_paste_name=title,
         api_paste_code=content,
     )
-    return paste_link = urllib.request.urlopen(PASTEBIN_URL,
+    paste_link = urllib.request.urlopen(PASTEBIN_URL,
                                         urllib.parse.urlencode(pastebin_vars)
                                         .encode('utf8')).read()
-
+    return paste_link
 
 @client.event
 @asyncio.coroutine

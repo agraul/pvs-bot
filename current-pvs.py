@@ -4,8 +4,10 @@ import discord
 import requests
 import datetime
 import id
-import subprocess
-
+import urllib.parse
+import urllib.request
+PASTEBIN_KEY = '2e15e96203dacd86c46417862c41f10f'
+PASTEBIN_URL = 'http://pastebin.com/api/api_post.php'
 client = discord.Client()
 filepath = "C:\PlatsVsSilversChatlogs"
 
@@ -523,12 +525,16 @@ async def savelogs2(message):
 
 
 @asyncio.coroutine
-def upload_logs(s, message):
-    p = subprocess.run(["pastebinit", "-a", "PvS-Bot", "-b", "cxg.de",
-                        "|", s], stdout=subprocess.PIPE,
-                       universal_newlines=True)
-    paste_link = p.stdout
-    print(paste_link)
+def pastebin(title, content, message):  # used for posting a new paste
+    pastebin_vars = dict(
+        api_option='paste',
+        api_dev_key=PASTEBIN_KEY,
+        api_paste_name=title,
+        api_paste_code=content,
+    )
+    paste_link = urllib.request.urlopen(PASTEBIN_URL,
+                                        urllib.parse.urlencode(pastebin_vars)
+                                        .encode('utf8')).read()
     admin_channel = discord.utils.get(message.server.channels, name='admin')
     yield from client.send_message(admin_channel, "Here is the link:"
                                    .format(paste_link))
@@ -737,7 +743,7 @@ def on_message(message):
                  input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 # print(logs)
-                upload_logs(s, message)
+                pastebin(title=Chatlog, s)
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,
                 # broken apart by new line characters

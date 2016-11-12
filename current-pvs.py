@@ -106,7 +106,6 @@ ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
 rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
 
 
-
 @asyncio.coroutine
 # manual role management for abbreviations
 def verify(message):
@@ -143,6 +142,7 @@ def verify(message):
         yield from client.send_message(message.channel,
                                        "Invalid format. Please type '!verify "
                                        "Summoner Name,Region ID'")
+
 
 def add_support(message):
     author = message.author
@@ -528,19 +528,23 @@ def upload_logs(s, message):
                         "|", s], stdout=subprocess.PIPE,
                        universal_newlines=True)
     paste_link = p.stdout
+    print(paste_link)
     admin_channel = discord.utils.get(message.server.channels, name='admin')
     yield from client.send_message(admin_channel, "Here is the link:"
                                    .format(paste_link))
 
+
 @client.event
 @asyncio.coroutine
-def on_member_update(before, after): #Changes in
+def on_member_update(before, after):  # Changes in
     nb = before.display_name
     na = after.display_name
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
-    if not na is None and not nb is None and not nb == na: #If the previous username was not the base name
-        yield from client.send_message(chatlog, "`NICKNAME CHANGED` " + str(before) + "\n\tFrom " + nb + " to " + na)
-
+    if not na is None and not nb is None and not nb == na:
+        # If the previous username was not the base name
+        yield from client.send_message(chatlog, "`NICKNAME CHANGED` " +
+                                       str(before) + "\n\tFrom " + nb +
+                                       " to " + na)
 
 
 @client.event
@@ -548,6 +552,7 @@ def on_member_update(before, after): #Changes in
 def on_member_join(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
     yield from client.send_message(chatlog, "`JOINED` " + str(member))
+
 
 @client.event
 @asyncio.coroutine
@@ -560,41 +565,51 @@ def on_member_remove(member):
 @asyncio.coroutine
 def on_message_delete(message):
     channel = message.channel
-    content = message.content.replace('<@','< @')
+    content = message.content.replace('<@', '[at]')
     author = message.author
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-        yield from client.send_message(chatlog,"`DELETED` **" + str(channel) + "**: " + str(author) + ": " + str(content))
+        yield from client.send_message(chatlog, "`DELETED` **" + str(channel) +
+                                       "**: " + str(author) + ": " +
+                                       str(content))
 
 
 @client.event
 @asyncio.coroutine
 def on_message_edit(before, after):
     channel = before.channel
-    contentb = before.content.replace('<@','< @')
-    contenta = after.content.replace('<@','< @')
+    contentb = before.content.replace('<@', '[at]')
+    contenta = after.content.replace('<@', '[at]')
     author = before.author
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-        yield from client.send_message(chatlog,"`EDITTED`\n\t`BEFORE` **" + str(channel) + "**: " + str(author) + ": " + str(contentb) + "\n\tAFTER: " + str(channel) + ": " + str(author) + ": " + str(contenta))
+        yield from client.send_message(chatlog, "`EDITTED`\n\t`BEFORE` **" +
+                                       str(channel) + "**: " + str(author) +
+                                       ": " + str(contentb) +
+                                       "\n\tAFTER: " + str(channel) + ": " +
+                                       str(author) + ": " + str(contenta))
+
 
 @client.event
 @asyncio.coroutine
 def on_message(message):
     admin = discord.utils.get(message.server.roles, name='admin')
-    #Logs all messages
+    # Logs all messages
     channel = message.channel
-    content = message.content.replace('<@','< @')
+    content = message.content.replace('<@', '[at]')
     author = message.author
-    timestamp = message.timestamp.strftime('%b %d: %H:%M')#('%a %b %d: %H:%M:%S')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
-            yield from client.send_message(chatlog,timestamp + " UTC `SENT` **" + str(channel) + "**: " + str(author) + ": " + str(content))
+            yield from client.send_message(chatlog, timestamp +
+                                           " UTC `SENT` **" + str(channel) +
+                                           "**: " + str(author) + ": " +
+                                           str(content))
 
-    #Commands
+    # Commands
 
 
-#Help Commands
+# Help Commands
     if message.content.startswith('?!roles'):
         yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"
@@ -718,13 +733,15 @@ def on_message(message):
         if admin in message.author.roles:
             logs = yield from savelogs(message)
             if logs == "":
-                yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
+                yield from client.send_message(message.channel, "The number you
+                 input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
-                #print(logs)
+                # print(logs)
                 upload_logs(s, message)
-                #Hello merK
-                #The string S is a string with all the relevent chatlogs in order, broken apart by new line characters
-                #If you instead want the raw list, use the method savelogs2 instead
+                # Hello merK
+                # The string S is a string with all the relevent chatlogs in order,
+                # broken apart by new line characters
+                # If you instead want the raw list, use the method savelogs2 instead
         else:
             yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
 client.run(id.token1())

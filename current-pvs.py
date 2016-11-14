@@ -740,7 +740,7 @@ def on_message(message):
             else:
                 # print(logs)
                 paste_link = yield from pastebin('Chatlog', logs)
-                yield from client.send_message(message.server.channel, "Here is the link:{}".format(paste_link).decode('utf8'))
+                yield from client.send_message(message.server.channel, "Here is the link:{}".format(paste_link.decode('utf8')))
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,
                 # broken apart by new line characters

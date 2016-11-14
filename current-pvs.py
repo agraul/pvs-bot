@@ -739,7 +739,7 @@ def on_message(message):
                 yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
             else:
                 # print(logs)
-                paste_link = yield from pastebin('Chatlog', logs)
+                paste_link = yield from pastebin('Chatlog', logs).decode("utf8")
                 yield from client.send_message(message.server.channel, "Here is the link:{}".format(paste_link))
                 # Hello merK
                 # The string S is a string with all the relevent chatlogs in order,

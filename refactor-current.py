@@ -3,6 +3,13 @@ import asyncio
 import discord
 import requests
 import id
+import urllib.parse
+import urllib.request
+
+# TODO: update everything to python3.5
+# TODO: general add_roles (only triggered for whitelisted roles)
+# TODO: add logging / pastebin
+# TODO: restrict bot to bot-channels
 
 client = discord.Client()
 
@@ -141,10 +148,29 @@ def verify(message):
                                        "Summoner Name,Region ID'")
 
 
-
 def add_role(message):
     author = messag.author
-    if message.content[2:].lower().startswith('support'):
+    if message.content[2:].lower().startswith('na'):
+        role = discord.utils.get(message.server.roles, name='NA')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('eune'):
+        role = discord.utils.get(message.server.roles, name='EUNE')
+    elif message.content[2:].lower().startswith('oce'):
+        role = discord.utils.get(message.server.roles, name='OCE')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('euw'):
+        role = discord.utils.get(message.server.roles, name='EUW')
+    elif message.content[2:].lower().startswith('support'):
         role = discord.utils.get(message.server.roles, name='Support')
     elif message.content[2:].lower().startswith('adc'):
         role = discord.utils.get(message.server.roles, name='ADC')
@@ -163,7 +189,7 @@ def add_role(message):
         role = discord.utils.get(message.server.roles, name='Silver')
         roles = author.roles
         l = [role]
-        vlfag = True:
+        vlfag = True
     elif message.content[2:].lower().startswith('gold'):
         role = discord.utils.get(message.server.roles, name='Gold')
         roles = author.roles
@@ -236,192 +262,6 @@ def del_role(message):
     yield from client.remove_roles(author, role)
 
 
-def add_bronze(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Bronze')
-    roles = message.author.roles
-    l = [role]
-    for r in roles:
-        if r.name != "Verified":
-            l.append(discord.utils.get(message.server.roles, name=r.name))
-    yield from client.replace_roles(message.author, *l)
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-
-
-def del_bronze(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Bronze')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-                                   "You have been added to {}".format(role))
-
-def del_silver(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Silver')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-
-def del_gold(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Gold')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-
-def del_platinum(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Platinum')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-
-def del_diamond(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Diamond')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def del_masters(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Masters')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def del_challenger(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Challenger')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_na(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='NA')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_na(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='NA')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_euw(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='EUW')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_euw(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='EUW')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_oce(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='OCE')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_oce(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='OCE')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_eune(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='EUNE')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_eune(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='EUNE')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_lan(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='LAN')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_lan(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='LAN')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_brazil(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='BR')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_brazil(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='BR')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
-def add_china(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='CHINA')
-    yield from client.send_message(message.channel,
-                                   "You have been added to {}".format(role))
-    yield from client.add_roles(author, role)
-
-
-def del_china(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='CHINA')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
-
-
 def add_coach(message):
     author = message.author
     required_roles = ['Diamond', 'Platinum', 'Masters', 'Challenger']
@@ -445,14 +285,6 @@ def add_coach(message):
         yield from client.send_message(message.channel,
                                        "You need to be at least Platinum "
                                        "to become a coach.")
-
-
-def del_coach(message):
-    author = message.author
-    role = discord.utils.get(message.server.roles, name='Coach')
-    yield from client.send_message(message.channel,
-                                   "You have been removed from {}".format(role))
-    yield from client.remove_roles(author, role)
 
 
 @client.event

@@ -93,3 +93,7 @@ id.py
 
 # pgn of log
 pvs-bot-log.png
+
+timeout.py
+pastebin.py
+ubuntuvm/

@@ -10,11 +10,128 @@ import id
 client = discord.Client()
 # TODO: !verify
 
+
+class RankGetter(object):
+    def __init__(self, api_key):
+        self.api_key = api_key
+
+    def _request(self, api_url, region, params={}):
+        args = {'api_key': self.api_key}
+        for key, value in params.items():
+            if key not in args:
+                args[key] = value
+        destination = URL['base'].format(
+            proxy=region,
+            region=region,
+            url=api_url
+        )
+        response = requests.get(
+            destination,
+            params=args
+        )
+        return response.json()
+
+    # Based on Summoner name, get their info
+    def _get_summoner_by_name(self, name, region):
+        api_url = URL['summoner_by_name'].format(
+            version=API_VERSIONS['summoner_by_name'],
+            names=name
+            )
+        return self._request(api_url, region)
+
+    # Based on Summoner name, get ID
+    def _get_summoner_id(self, name, region):
+        self.name = name.replace(" ", "").lower()
+        r = self._get_summoner_by_name(self.name, region)[self.name]
+        return r['id']
+
+    # Based on Summoner ID, get their rank
+    def _get_rank(self, id, region):
+        try:
+            api_url = URL['get_league'].format(
+             version=API_VERSIONS['get_league'],
+             id=id)
+            league = self._request(api_url, region.rstrip())[str(id)][0]
+            tier = league['tier']
+            division = league['entries'][0]['division']
+            return tier.title()  # + " " + division
+        except:
+            return "Unranked"
+
+    # Get information based on rune page
+    def _get_runes(self, id, region):
+        api_url = URL['get_runes'].format(
+            version=API_VERSIONS['get_runes'],
+            id=id
+            )
+        return self._request(api_url, region)
+
+    # Get first rune page name
+    def _get_rune_name(self, id, region):
+        runes = self._get_runes(id, region)
+        return runes[str(id)]['pages'][0]['name']
+
+    # Returns account info that was saved (author'sName,summoner'sName,region)
+    def _get_linked_account(self, name, author, region):
+        id = self._get_summoner_id(name, region)
+        accountLink = [[i for i in line.split(',')] for line in
+                       open('linkedAccounts.txt', 'r')]
+        for x in accountLink:
+            if x[1] == str(id):
+                if x[0].lower() == author.lower():
+                    if x[2].rstrip() == region.lower():
+                        return x
+
+    def verify_rank(self, name, region):
+        id = self._get_summoner_id(name, region)
+        if self._get_rune_name(id, region) == "Plats vs Silvers":
+            return self._get_rank(id, region)
+        else:
+            return "Error"
+rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
+ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
+         "Challenger"]
+
+async def verify(message):
+    try:
+        author = message.author
+        content = message.content[8:].split(',')
+        rank = rg.verify_rank(content[0], content[1].lower().strip(" "))
+        rank2 = discord.utils.get(message.server.roles, name=rank)
+        region = discord.utils.get(message.server.roles,
+                                   name=content[1].upper().strip(" "))
+        roles = author.roles
+        if rank == "Masters" or rank == "Challenger" or rank == "Diamond":
+            rank2 = discord.utils.get(message.server.roles, name='Diamond +')
+        if rank == "Error":
+            await client.send_message(message.channel, "To verify rank, "
+                                      "please set the name of your first "
+                                      "rune page to 'Plats vs Silvers'. "
+                                      "Make sure you typed the name of "
+                                      "your account correctly too.")
+        elif rank == "Unranked":
+            await client.send_message(message.channel, "You are currently "
+                                      "not ranked in dynamic queue "
+                                      "this season")
+        else:
+            l = [discord.utils.get(message.server.roles, name='Verified'),
+                 rank2, region]
+            async for r in roles:
+                if r.name not in ranks:
+                    l.append(discord.utils.get(message.server.roles,
+                                               name=r.name))
+            await client.replace_roles(author, *l)
+            await client.send_message(message.channel, "You have been added to"
+                                      " {}".format(rank2))
+    except:
+        await client.send_message(message.channel, "Invalid format. Correct "
+                                  "syntax is `!verify summoner,region`")
+
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'KR', 'RU', 'JP', , 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support']
-privileged_roles = ['admin', 'moderator']   # TODO: update to real names
+privileged_roles = ['admin', 'moderator']   # TODO: update to real role names
 # function for generic role self-add
 async def role_add(message):
     author = message.author

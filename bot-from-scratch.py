@@ -10,6 +10,7 @@ import id
 client = discord.Client()
 
 allowed_roles = []  # whitelist of roles for self management
+coach_role = ['coach', 'Coach', 'COACH']    # check if role is coaching role
 # function for generic role self-add
 async def role_add(message):
     author = message.author
@@ -71,7 +72,24 @@ async def role_strip(message):
 async def on_message(message):
     content = message.content
     if content.startswith('+!'):
-        if content[2:] in allowed_roles:
+        if content[2:] in coach_role:
+            for r in message.author.roles:
+                if r.name == 'Diamond +' or if r.name == 'Platinum':
+                    high_elo = True
+                else:
+                    await client.send_message(message.channel, "You don't meed "
+                                              "our elo requirement to self "
+                                              "assign the coach role. Please "
+                                              "talk to an admin.")
+                if high_elo:
+                    for r in message.author.roles:
+                        if r.name == 'Verified':
+                            await role_add(message)
+                        else:
+                            await client.send_message(message.channel,
+                                                      "Please verify your rank "
+                                                      "first.")
+        elif content[2:] in allowed_roles:
             await role_add(message)
         else:
             await client.send_message(message.channel, "Your selected role "

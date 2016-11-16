@@ -8,10 +8,13 @@ import urllib.request
 import id
 
 client = discord.Client()
+# TODO: !verify
 
+# lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
-                    'KR', 'Top', 'Mid', 'Junle', 'ADC', 'Support']  # whitelist of roles for self management
-privileged_roles = ['admin', 'moderator']
+                    'KR', 'RU', 'JP', , 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
+                    'Support']
+privileged_roles = ['admin', 'moderator']   # TODO: update to real names
 # function for generic role self-add
 async def role_add(message):
     author = message.author
@@ -99,17 +102,60 @@ async def pastbin(title, content):
                                       'utf-8')).read()
 
 
-
 @client.event
+chatlog = discord.utils.get(member.server.channels, name='chatlog')
+timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
+
+async def on_member_join(member):
+    await client.send_message(chatlog, "{} UTC: `JOINED` {}".format(timestamp,
+                                                                    member))
+
+async def on_member_remove:
+    await client.send_message(chatlog, "{} UTC: `LEFT` {}".format(timestamp,
+                                                                  member))
+async def on_member_update(before, after):
+    name_before = before.display_name
+    name_after = after.display_name
+    if name_after is not None and name_before is not None and \
+            name_before != name_after:
+        await client.send_message(chatlog, "{} UTC: `NICKNAME CHANGED` ({}) "
+                                  "from {} to {}".format(timestamp, before,
+                                                         name_before,
+                                                         name_after))
+
+async def on_message_delete(message):
+    if str(message.channel) != 'chatlog':
+        await client.send_message(chatlog, "{} UTC: `DELETED` **{}:** {}: {}"
+                                  .format(timestamp, message.channel,
+                                          message.author,
+                                          message.content.replace('@', '@ ')))
+
+async def on_message_edit(before, after):
+    channel = before.channel
+    author = before.author
+    content_before = before.content.replace('@', '@ ')
+    content_after = after.content.replace('@', '@ ')
+    if str(message.channel) != 'chatlog':
+        await client.send_message(chatlog, "{} UTC: `EDITED`\n\t `BEFORE`"
+                                  "**{}:** {}: {}\n\t`AFTER` **{}:** {}: {}"
+                                  .format(timestamp, channel, author,
+                                          content_before, channel, author,
+                                          content_after))
+
 async def on_message(message):
     content = message.content
+    channel = message.channel
+    if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
+        await client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
+                                  .format(timestamp, channel, message.author,
+                                          content.replace('@', '@ ')))
     if content.startswith('+!'):
-        if content[2:] == 'Coach':
-            for r in message.author.roles:
+        if content[2:] == 'Coach':  # check if elo is met for self assignment
+            async for r in message.author.roles:
                 if r.name == 'Diamond +' or if r.name == 'Platinum':
                     high_elo = True
                 else:
-                    await client.send_message(message.channel, "You don't meed "
+                    await client.send_message(message.channel, "You don't meet "
                                               "our elo requirement to self "
                                               "assign the coach role. Please "
                                               "talk to an admin.")
@@ -121,8 +167,8 @@ async def on_message(message):
                             await client.send_message(message.channel,
                                                       "Please verify your rank "
                                                       "first.")
-        elif content[2:] in assignable_roles:
-            await role_add(message)
+        elif content[2:] in assignable_roles:     # keep self assignment to
+            await role_add(message)               # specific roles
         else:
             await client.send_message(message.channel, "Your selected role "
                                       "can't be self-assigned by the bot. "
@@ -131,8 +177,8 @@ async def on_message(message):
         await role_strip(message)
 
     elif content.startswith('!savelogs'):
-        for r in message.author.roles:
-            if r.name in privileged_roles:
+        async for r in message.author.roles:
+            if r.name in privileged_roles:  # only works for whitelisted roles
                 channel, logs = await savelogs(message)
                 if logs == '':
                     await client.send_message(message.channel, "An error "

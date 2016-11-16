@@ -8,8 +8,8 @@ import urllib.request
 import id
 
 client = discord.Client()
-# TODO: !verify
 
+# Rank Getter for verify()
 URL = {
     'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
     'summoner_by_name': 'v{version}/summoner/by-name/{names}',
@@ -117,7 +117,7 @@ rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
 ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
          "Challenger"]
 
-async def verify(message):
+async def verify(message):  # check elo from summoner name and region and assign role
     try:
         author = message.author
         content = message.content[8:].split(',')
@@ -155,8 +155,9 @@ async def verify(message):
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'KR', 'RU', 'JP', 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
-                    'Support']
-privileged_roles = ['admin', 'moderator']   # TODO: update to real role names
+                    'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
+                    'Diamond +']
+privileged_roles = ['admin']   # TODO: update to new role names
 # function for generic role self-add
 async def role_add(message):
     author = message.author

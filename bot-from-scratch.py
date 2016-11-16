@@ -9,8 +9,9 @@ import id
 
 client = discord.Client()
 
-allowed_roles = []  # whitelist of roles for self management
-coach_role = ['coach', 'Coach', 'COACH']    # check if role is coaching role
+assignable_roles = []  # whitelist of roles for self management
+coach_role = ['coach', 'Coach', 'COACH']    # to check if input == coach
+privileged_roles = ['admin', 'moderator']
 # function for generic role self-add
 async def role_add(message):
     author = message.author
@@ -68,6 +69,52 @@ async def role_strip(message):
         await client.send_message(message.channel, "Please enter a valid role.")
 
 
+async def savelogs(message):
+    logs = []
+    command, channel, numberString = message.content.split(' ')
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    s = ""
+    channel = channel.lower()
+    try:
+        number = int(numberString)
+        async for log in client.logs_from(chatlog, limit=number):
+            if ("**" + channel + "**") in log.content:
+                logs.append(log)
+        for l in reversed(logs):
+            s += l.content + "\n"
+        return channel, s
+    except:
+        return channel, s
+
+async def savelogs2(message):
+    logs = []
+    command, channel, numberString = message.content.split(' ')
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    s = ""
+    channel = channel.lower()
+    try:
+        number = int(numberString)
+        async for log in client.logs_from(chatlog, limit=number):
+            if ("**" + channel + "**") in log.content:
+                logs.append(log)
+        return channel, reversed(logs)
+    except:
+        return channel, logs
+
+PASTEBIN_URL = 'http://pastebin.com/api/api_post.php'
+async def pastbin(title, content):
+    pastebin_vars = dict(
+        api_option='paste'
+        api_dev_key='2e15e96203dacd86c46417862c41f10f'
+        api_paste_name=title
+        api_paste_code=content
+    )
+    return urllib.request.urlopen(PASTEBIN_URL,
+                                  urllib.parse.urlencode(pastebin_vars).encode(
+                                      'utf-8')).read()
+
+
+
 @client.event
 async def on_message(message):
     content = message.content
@@ -89,7 +136,7 @@ async def on_message(message):
                             await client.send_message(message.channel,
                                                       "Please verify your rank "
                                                       "first.")
-        elif content[2:] in allowed_roles:
+        elif content[2:] in assignable_roles:
             await role_add(message)
         else:
             await client.send_message(message.channel, "Your selected role "
@@ -98,5 +145,22 @@ async def on_message(message):
     elif content.startswith('-!'):
         await role_strip(message)
 
-
+    elif content.startswith('!savelogs'):
+        for r in message.author.roles:
+            if r.name in privileged_roles:
+                channel, logs = await savelogs(message)
+                if logs == '':
+                    await client.send_message(message.channel, "An error "
+                                              "occured. Please make sure you "
+                                              "are using the correct syntax"
+                                              "`!savelogs channel number`")
+                else:
+                    title = "Chatlog for {}".format(channel)
+                    paste_link = await pastebin(title, logs)
+                    paste_link.decode('utf-8')
+                    await client.send_message(message.channel, "Here is the "
+                                              "chatlog: {}".format(paste_link))
+            else:
+                await client.send_message(message.channel, "You don't have "
+                                          "permission to request chatlogs.")
 client.run(id.token2())

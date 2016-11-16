@@ -9,34 +9,19 @@ import id
 
 client = discord.Client()
 
-assignable_roles = []  # whitelist of roles for self management
-coach_role = ['coach', 'Coach', 'COACH']    # to check if input == coach
+assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
+                    'KR', 'Top', 'Mid', 'Junle', 'ADC', 'Support']  # whitelist of roles for self management
 privileged_roles = ['admin', 'moderator']
 # function for generic role self-add
 async def role_add(message):
     author = message.author
     user_input = message.content[2:]
     role = discord.utils.get(message.server.roles, name=user_input)
-    roleLower = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpper = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTitle = discord.utils.get(message.server.roles, name=user_input.title())
 
     if str(role) != "None":
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
-    elif str(roleLower) != "None":
-        await client.add_roles(author, roleLower)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleLower))
-    elif str(roleUpper) != "None":
-        await client.add_roles(author, roleUpper)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleUpper))
-    elif str(roleTitle) != "None":
-        await client.add_roles(author, roleTitle)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleTitle))
     else:
         await client.send_message(message.channel, "Please enter a valid role.")
 
@@ -101,7 +86,7 @@ async def savelogs2(message):
     except:
         return channel, logs
 
-PASTEBIN_URL = 'http://pastebin.com/api/api_post.php'
+
 async def pastbin(title, content):
     pastebin_vars = dict(
         api_option='paste'
@@ -109,7 +94,7 @@ async def pastbin(title, content):
         api_paste_name=title
         api_paste_code=content
     )
-    return urllib.request.urlopen(PASTEBIN_URL,
+    return urllib.request.urlopen('http://pastebin.com/api/api_post.php',
                                   urllib.parse.urlencode(pastebin_vars).encode(
                                       'utf-8')).read()
 
@@ -119,7 +104,7 @@ async def pastbin(title, content):
 async def on_message(message):
     content = message.content
     if content.startswith('+!'):
-        if content[2:] in coach_role:
+        if content[2:] == 'Coach':
             for r in message.author.roles:
                 if r.name == 'Diamond +' or if r.name == 'Platinum':
                     high_elo = True

@@ -10,6 +10,31 @@ import id
 client = discord.Client()
 # TODO: !verify
 
+URL = {
+    'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
+    'summoner_by_name': 'v{version}/summoner/by-name/{names}',
+    'get_league': 'v{version}/league/by-summoner/{id}/entry',
+    'get_runes': 'v{version}/summoner/{id}/runes'
+}
+
+API_VERSIONS = {
+    'summoner_by_name': '1.4',
+    'get_league': '2.5',
+    'get_runes': '1.4'
+}
+RL = {
+    'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
+    'summoner_by_name': 'v{version}/summoner/by-name/{names}',
+    'get_league': 'v{version}/league/by-summoner/{id}/entry',
+    'get_runes': 'v{version}/summoner/{id}/runes'
+}
+
+API_VERSIONS = {
+    'summoner_by_name': '1.4',
+    'get_league': '2.5',
+    'get_runes': '1.4'
+}
+
 
 class RankGetter(object):
     def __init__(self, api_key):
@@ -129,7 +154,7 @@ async def verify(message):
 
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
-                    'KR', 'RU', 'JP', , 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
+                    'KR', 'RU', 'JP', 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support']
 privileged_roles = ['admin', 'moderator']   # TODO: update to real role names
 # function for generic role self-add
@@ -209,9 +234,9 @@ async def savelogs2(message):
 
 async def pastbin(title, content):
     pastebin_vars = dict(
-        api_option='paste'
-        api_dev_key='2e15e96203dacd86c46417862c41f10f'
-        api_paste_name=title
+        api_option='paste',
+        api_dev_key='2e15e96203dacd86c46417862c41f10f',
+        api_paste_name=title,
         api_paste_code=content
     )
     return urllib.request.urlopen('http://pastebin.com/api/api_post.php',
@@ -220,17 +245,22 @@ async def pastbin(title, content):
 
 
 @client.event
-chatlog = discord.utils.get(member.server.channels, name='chatlog')
-timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
-
 async def on_member_join(member):
+    chatlog = discord.utils.get(member.server.channels, name='chatlog')
     await client.send_message(chatlog, "{} UTC: `JOINED` {}".format(timestamp,
                                                                     member))
 
-async def on_member_remove:
+
+@client.event
+async def on_member_remove(member):
+    chatlog = discord.utils.get(member.server.channels, name='chatlog')
     await client.send_message(chatlog, "{} UTC: `LEFT` {}".format(timestamp,
                                                                   member))
+
+
+@client.event
 async def on_member_update(before, after):
+    chatlog = discord.utils.get(before.server.channels, name='chatlog')
     name_before = before.display_name
     name_after = after.display_name
     if name_after is not None and name_before is not None and \
@@ -240,14 +270,22 @@ async def on_member_update(before, after):
                                                          name_before,
                                                          name_after))
 
+
+@client.event
 async def on_message_delete(message):
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     if str(message.channel) != 'chatlog':
         await client.send_message(chatlog, "{} UTC: `DELETED` **{}:** {}: {}"
                                   .format(timestamp, message.channel,
                                           message.author,
                                           message.content.replace('@', '@ ')))
 
+
+@client.event
 async def on_message_edit(before, after):
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     channel = before.channel
     author = before.author
     content_before = before.content.replace('@', '@ ')
@@ -259,9 +297,14 @@ async def on_message_edit(before, after):
                                           content_before, channel, author,
                                           content_after))
 
+
+@client.event
 async def on_message(message):
+    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     content = message.content
     channel = message.channel
+    # await print("I read {}".format(content))
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
         await client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
                                   .format(timestamp, channel, message.author,
@@ -269,7 +312,7 @@ async def on_message(message):
     if content.startswith('+!'):
         if content[2:] == 'Coach':  # check if elo is met for self assignment
             async for r in message.author.roles:
-                if r.name == 'Diamond +' or if r.name == 'Platinum':
+                if r.name == 'Diamond +' or r.name == 'Platinum':
                     high_elo = True
                 else:
                     await client.send_message(message.channel, "You don't meet "

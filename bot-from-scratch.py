@@ -182,19 +182,19 @@ async def role_strip(message):
     if str(role) != "None":
         await client.remove_roles(author, role)
         await client.send_message(message.channel, "You have been removed from"
-                                  "{}".format(role))
+                                  " {}".format(role))
     elif str(roleLower) != "None":
         await client.remove_roles(author, roleLower)
         await client.send_message(message.channel, "You have been removed from"
-                                  "{}".format(roleLower))
+                                  " {}".format(roleLower))
     elif str(roleUpper) != "None":
         await client.remove_roles(author, roleUpper)
         await client.send_message(message.channel, "You have been removed from"
-                                  "{}".format(roleUpper))
+                                  " {}".format(roleUpper))
     elif str(roleTitle) != "None":
         await client.remove_roles(author, roleTitle)
         await client.send_message(message.channel, "You have been removed from"
-                                  "{}".format(roleTitle))
+                                  " {}".format(roleTitle))
     else:
         await client.send_message(message.channel, "Please enter a valid role.")
 

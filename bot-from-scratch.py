@@ -232,7 +232,7 @@ async def savelogs2(message):
     except:
         return channel, logs
 
-# function to upload output from savelogs/-2() to pastebin
+# function to upload output from savelogs(2)() to pastebin
 async def pastbin(title, content):
     pastebin_vars = dict(
         api_option='paste',
@@ -243,6 +243,16 @@ async def pastbin(title, content):
     return urllib.request.urlopen('http://pastebin.com/api/api_post.php',
                                   urllib.parse.urlencode(pastebin_vars).encode(
                                       'utf-8')).read()
+# kick command
+async def kick_user(message):
+    content = message.content[5:].strip()
+    target = discord.utils.get(message.server.members, display_name=content)
+    if target is None:
+        target = discord.utils.get(message.server.members, name=content)
+    await client.start_private_message(target)
+    await client.send_message(target, 'You got kicked from PvS by {}'
+                              .format(message.author.display_name))
+    await client.kick(target)
 
 
 @client.event
@@ -355,4 +365,18 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, "You don't have "
                                           "permission to request chatlogs.")
+
+    elif content.startswith('!kick'):
+        async for r in message.author.roles:
+            if r.name in privileged_roles:
+                await kick_user(message)
+            else:
+                await client.send_message(message.channel, "You lack "
+                                          "permission to kick users. This "
+                                          "incident will be reported.")
+                admin_channel = discord.utils.get(message.server.channels,
+                                                  name='admin')
+                await client.send_message(admin_channel, "{} tried to use "
+                                          "`!kick` in {}".format(message.author,
+                                                                 message.channel))
 client.run(id.token2())

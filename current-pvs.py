@@ -568,7 +568,7 @@ def on_member_remove(member):
 @asyncio.coroutine
 def on_message_delete(message):
     channel = message.channel
-    content = message.content.replace('<@', '< @')
+    content = message.content.replace('<@', '@ ')
     author = message.author
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
@@ -581,8 +581,8 @@ def on_message_delete(message):
 @asyncio.coroutine
 def on_message_edit(before, after):
     channel = before.channel
-    contentb = before.content.replace('<@', '< @')
-    contenta = after.content.replace('<@', '< @')
+    contentb = before.content.replace('<@', '@ ')
+    contenta = after.content.replace('<@', '@ ')
     author = before.author
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
     if(str(channel) != 'chatlog'):
@@ -599,7 +599,7 @@ def on_message(message):
     admin = discord.utils.get(message.server.roles, name='admin')
     # Logs all messages
     channel = message.channel
-    content = message.content.replace('<@', '< @')
+    content = message.content.replace('<@', '@ ')
     author = message.author
     timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')

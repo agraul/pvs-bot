@@ -199,7 +199,7 @@ async def role_strip(message):
     else:
         await client.send_message(message.channel, "Please enter a valid role.")
 
-
+# function to format and filter log in #chatlog and return a string
 async def savelogs(message):
     logs = []
     command, channel, numberString = message.content.split(' ')
@@ -216,7 +216,7 @@ async def savelogs(message):
         return channel, s
     except:
         return channel, s
-
+# function to format and filter log in #chatlog and return a list
 async def savelogs2(message):
     logs = []
     command, channel, numberString = message.content.split(' ')
@@ -232,7 +232,7 @@ async def savelogs2(message):
     except:
         return channel, logs
 
-
+# function to upload output from savelogs/-2() to pastebin
 async def pastbin(title, content):
     pastebin_vars = dict(
         api_option='paste',

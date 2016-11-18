@@ -8,7 +8,8 @@ import urllib.request
 import id
 
 client = discord.Client()
-
+# TODO: TESTING
+# TODO: !timeout
 # Rank Getter for verify()
 URL = {
     'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',

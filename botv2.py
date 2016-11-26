@@ -10,6 +10,7 @@ import id
 client = discord.Client()
 # TODO: TESTING
 # TODO: !timeout
+
 # Rank Getter for verify()
 URL = {
     'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
@@ -316,37 +317,39 @@ async def on_message(message):
     timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     content = message.content
     channel = message.channel
-    # await print("I read {}".format(content))
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
         await client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
                                   .format(timestamp, channel, message.author,
                                           content.replace('@', '@ ')))
     if content.startswith('+!'):
-        if content[2:] == 'Coach':  # check if elo is met for self assignment
-            async for r in message.author.roles:
-                if r.name == 'Diamond +' or r.name == 'Platinum':
-                    high_elo = True
-                else:
-                    await client.send_message(message.channel, "You don't meet "
-                                              "our elo requirement to self "
-                                              "assign the coach role. Please "
-                                              "talk to an admin.")
-                if high_elo:
-                    for r in message.author.roles:
-                        if r.name == 'Verified':
-                            await role_add(message)
-                        else:
-                            await client.send_message(message.channel,
+        if channel == discord.utils.get(message.server.channels,
+                                        name='rank-server-roles'):
+            if content[2:] == 'Coach':  # check if elo is met for self assignment
+                async for r in message.author.roles:
+                    if r.name == 'Diamond +' or r.name == 'Platinum':
+                        high_elo = True
+                    else:
+                        await client.send_message(channel,
+                            "You don't meet our elo requirement to self "
+                            "assign the coach role. Please talk to an admin.")
+                    if high_elo:
+                        for r in message.author.roles:
+                            if r.name == 'Verified':
+                                await role_add(message)
+                            else:
+                                await client.send_message(channel,
                                                       "Please verify your rank "
                                                       "first.")
-        elif content[2:] in assignable_roles:     # keep self assignment to
-            await role_add(message)               # specific roles
-        else:
-            await client.send_message(message.channel, "Your selected role "
+            elif content[2:] in assignable_roles:     # keep self assignment to
+                await role_add(message)               # specific roles
+            else:
+                await client.send_message(channel, "Your selected role "
                                       "can't be self-assigned by the bot. "
                                       "Please talk to an admin.")
     elif content.startswith('-!'):
-        await role_strip(message)
+        if channel == discord.utils.get(message.server.channels,
+                                        name='rank-server-roles'):
+            await role_strip(message)
 
     elif content.startswith('!savelogs'):
         async for r in message.author.roles:

@@ -111,7 +111,7 @@ class RankGetter(object):
 
     def verify_rank(self, name, region):
         id = self._get_summoner_id(name, region)
-        if self._get_rune_name(id, region) == "Plats vs Silvers":
+        if self._get_rune_name(id, region) == "summonersplaza":
             return self._get_rank(id, region)
         else:
             return "Error"
@@ -133,13 +133,12 @@ async def verify(message):  # check elo from summoner name and region and assign
         if rank == "Error":
             await client.send_message(message.channel, "To verify rank, "
                                       "please set the name of your first "
-                                      "rune page to 'Plats vs Silvers'. "
+                                      "rune page to 'summonersplaza'. "
                                       "Make sure you typed the name of "
                                       "your account correctly too.")
         elif rank == "Unranked":
             await client.send_message(message.channel, "You are currently "
-                                      "not ranked in dynamic queue "
-                                      "this season")
+                                      "not ranked in dynamic queue.")
         else:
             l = [discord.utils.get(message.server.roles, name='Verified'),
                  rank2, region]
@@ -156,19 +155,34 @@ async def verify(message):  # check elo from summoner name and region and assign
 
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
-                    'KR', 'RU', 'JP', 'TR', 'Top', 'Mid', 'Jungle', 'ADC',
+                    'KR', 'Turkey', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
                     'Diamond +']
-privileged_roles = ['admin']   # TODO: update to new role names
+privileged_roles = ['admin', 'Moderator']
 # function for generic role self-add
 async def role_add(message):
     author = message.author
     user_input = message.content[2:]
     role = discord.utils.get(message.server.roles, name=user_input)
+    roleLower = discord.utils.get(message.server.roles, name=user_input.lower())
+    roleUpper = discord.utils.get(message.server.roles, name=user_input.upper())
+    roleTitle = discord.utils.get(message.server.roles, name=user_input.title())
 
-    if str(role) != "None":
+    if str(role) != "None" and str(role) in assignable_roles:
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
+                                  .format(role))
+    elif str(roleLower) != "None" and str(roleLower) in assignable_roles:
+        await client.add_roles(author, roleLower)
+        await client.send_message(message.channle, "You have been added to {}"
+                                  .format(role))
+    elif str(roleUpper) != "None" and str(roleUpper) in assignable_roles:
+        await client.add_roles(author, roleUpper)
+        await client.send_message(message.channle, "You have been added to {}"
+                                  .format(role))
+    elif str(roleTitle) != "None" and str(roleTitle) in assignable_roles:
+        await client.add_roles(author, roleTitle)
+        await client.send_message(message.channle, "You have been added to {}"
                                   .format(role))
     else:
         await client.send_message(message.channel, "Please enter a valid role.")
@@ -323,7 +337,7 @@ async def on_message(message):
                                           content.replace('@', '@ ')))
     if content.startswith('+!'):
         if channel == discord.utils.get(message.server.channels,
-                                        name='rank-server-roles'):
+                                        name='rank-assignment'):
             if content[2:] == 'Coach':  # check if elo is met for self assignment
                 async for r in message.author.roles:
                     if r.name == 'Diamond +' or r.name == 'Platinum':
@@ -340,16 +354,39 @@ async def on_message(message):
                                 await client.send_message(channel,
                                                       "Please verify your rank "
                                                       "first.")
-            elif content[2:] in assignable_roles:     # keep self assignment to
-                await role_add(message)               # specific roles
             else:
-                await client.send_message(channel, "Your selected role "
-                                      "can't be self-assigned by the bot. "
-                                      "Please talk to an admin.")
+                await add_roles(message)
+
     elif content.startswith('-!'):
         if channel == discord.utils.get(message.server.channels,
-                                        name='rank-server-roles'):
+                                        name='rank-assignment'):
             await role_strip(message)
+
+    elif content.startswith('??help') and channel == discord.utils.get(
+        message.server.channels, name='rank-assignment'):
+        await client.send_message(channel, "You can add yourself to roles by "
+                                  "typing `+!ROLE` and remove yourself with "
+                                  "``-!ROLE`. See ??roles for a list of "
+                                  "assignable roles. You can also verify your"
+                                  " league by using "
+                                  "`!verify summonername,region`. Use ??verify"
+                                  "to learn more.")
+    elif content.startswith('??verify') and channel == discord.utils.get(
+        message.server.channels, name='rank-assignment'):
+        await client.send_message(channel, "To verify your account follow these"
+                                  "steps:\n1.: Rename your first rune page to"
+                                  "'summonersplaza'\n2.: Type `!verify summoner"
+                                  "name,region`. Verification is not available "
+                                  "for all regions.")
+
+    elif content.startswith('??roles') and channel == discord.utils.get(
+        message.server.channels, name='rank-assignment'):
+            await client.send_message(channel, "Roles you can use me for: "
+                                      "`{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
+                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
+                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
+                                      " `{}`, `{}`, `{}`,"
+                                      .format(*assignable_roles))
 
     elif content.startswith('!savelogs'):
         async for r in message.author.roles:
@@ -370,7 +407,7 @@ async def on_message(message):
                 await client.send_message(message.channel, "You don't have "
                                           "permission to request chatlogs.")
 
-    elif content.startswith('!kick'):
+    """elif content.startswith('!kick'):
         async for r in message.author.roles:
             if r.name in privileged_roles:
                 await kick_user(message)
@@ -382,5 +419,5 @@ async def on_message(message):
                                                   name='admin')
                 await client.send_message(admin_channel, "{} tried to use "
                                           "`!kick` in {}".format(message.author,
-                                                                 message.channel))
+                                                                 message.channel))"""
 client.run(id.token2())

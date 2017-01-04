@@ -142,7 +142,7 @@ async def verify(message):  # check elo from summoner name and region and assign
         else:
             l = [discord.utils.get(message.server.roles, name='Verified'),
                  rank2, region]
-            async for r in roles:
+            for r in roles:
                 if r.name not in ranks:
                     l.append(discord.utils.get(message.server.roles,
                                                name=r.name))
@@ -174,16 +174,16 @@ async def role_add(message):
                                   .format(role))
     elif str(roleLower) != "None" and str(roleLower) in assignable_roles:
         await client.add_roles(author, roleLower)
-        await client.send_message(message.channle, "You have been added to {}"
-                                  .format(role))
+        await client.send_message(message.channel, "You have been added to {}"
+                                  .format(roleLower))
     elif str(roleUpper) != "None" and str(roleUpper) in assignable_roles:
         await client.add_roles(author, roleUpper)
-        await client.send_message(message.channle, "You have been added to {}"
-                                  .format(role))
+        await client.send_message(message.channel, "You have been added to {}"
+                                  .format(roleUpper))
     elif str(roleTitle) != "None" and str(roleTitle) in assignable_roles:
         await client.add_roles(author, roleTitle)
-        await client.send_message(message.channle, "You have been added to {}"
-                                  .format(role))
+        await client.send_message(message.channel, "You have been added to {}"
+                                  .format(roleTitle))
     else:
         await client.send_message(message.channel, "Please enter a valid role.")
 
@@ -259,7 +259,7 @@ async def pastbin(title, content):
     return urllib.request.urlopen('http://pastebin.com/api/api_post.php',
                                   urllib.parse.urlencode(pastebin_vars).encode(
                                       'utf-8')).read()
-# kick command
+"""# kick command
 async def kick_user(message):
     content = message.content[5:].strip()
     target = discord.utils.get(message.server.members, display_name=content)
@@ -268,7 +268,7 @@ async def kick_user(message):
     await client.start_private_message(target)
     await client.send_message(target, 'You got kicked from PvS by {}'
                               .format(message.author.display_name))
-    await client.kick(target)
+    await client.kick(target)"""
 
 
 @client.event
@@ -326,45 +326,48 @@ async def on_message_edit(before, after):
 
 
 @client.event
-async def on_message(message):
+@asyncio.coroutine
+def on_message(message):
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
     timestamp = message.timestamp.strftime('%b %d: %H:%M')  # ('%a %b %d: %H:%M:%S')
     content = message.content
     channel = message.channel
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
-        await client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
+        yield from client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
                                   .format(timestamp, channel, message.author,
                                           content.replace('@', '@ ')))
     if content.startswith('+!'):
         if channel == discord.utils.get(message.server.channels,
                                         name='rank-assignment'):
-            if content[2:] == 'Coach':  # check if elo is met for self assignment
-                async for r in message.author.roles:
+            if content[2:] == 'Coach' or content[2:] == 'coach':  # check if elo is met for self assignment
+                for r in message.author.roles:
+                    print(r.name)
                     if r.name == 'Diamond +' or r.name == 'Platinum':
                         high_elo = True
                     else:
-                        await client.send_message(channel,
+                        yield from client.send_message(channel,
                             "You don't meet our elo requirement to self "
-                            "assign the coach role. Please talk to an admin.")
+                            "assign the coach role. You need to be at least "
+                            "Platinum.")
                     if high_elo:
                         for r in message.author.roles:
                             if r.name == 'Verified':
-                                await role_add(message)
+                                yield from role_add(message)
                             else:
-                                await client.send_message(channel,
+                                yield from client.send_message(channel,
                                                       "Please verify your rank "
                                                       "first.")
             else:
-                await add_roles(message)
+                yield from role_add(message)
 
     elif content.startswith('-!'):
         if channel == discord.utils.get(message.server.channels,
                                         name='rank-assignment'):
-            await role_strip(message)
+            yield from role_strip(message)
 
     elif content.startswith('??help') and channel == discord.utils.get(
         message.server.channels, name='rank-assignment'):
-        await client.send_message(channel, "You can add yourself to roles by "
+        yield from client.send_message(channel, "You can add yourself to roles by "
                                   "typing `+!ROLE` and remove yourself with "
                                   "``-!ROLE`. See ??roles for a list of "
                                   "assignable roles. You can also verify your"
@@ -373,7 +376,7 @@ async def on_message(message):
                                   "to learn more.")
     elif content.startswith('??verify') and channel == discord.utils.get(
         message.server.channels, name='rank-assignment'):
-        await client.send_message(channel, "To verify your account follow these"
+        yield from client.send_message(channel, "To verify your account follow these"
                                   "steps:\n1.: Rename your first rune page to"
                                   "'summonersplaza'\n2.: Type `!verify summoner"
                                   "name,region`. Verification is not available "
@@ -381,7 +384,7 @@ async def on_message(message):
 
     elif content.startswith('??roles') and channel == discord.utils.get(
         message.server.channels, name='rank-assignment'):
-            await client.send_message(channel, "Roles you can use me for: "
+            yield from client.send_message(channel, "Roles you can use me for: "
                                       "`{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
@@ -389,22 +392,22 @@ async def on_message(message):
                                       .format(*assignable_roles))
 
     elif content.startswith('!savelogs'):
-        async for r in message.author.roles:
+        for r in message.author.roles:
             if r.name in privileged_roles:  # only works for whitelisted roles
-                channel, logs = await savelogs(message)
+                channel, logs = yield from savelogs(message)
                 if logs == '':
-                    await client.send_message(message.channel, "An error "
+                    yield from client.send_message(message.channel, "An error "
                                               "occured. Please make sure you "
                                               "are using the correct syntax"
                                               "`!savelogs channel number`")
                 else:
                     title = "Chatlog for {}".format(channel)
-                    paste_link = await pastebin(title, logs)
+                    paste_link = yield from pastebin(title, logs)
                     paste_link.decode('utf-8')
-                    await client.send_message(message.channel, "Here is the "
+                    yield from client.send_message(message.channel, "Here is the "
                                               "chatlog: {}".format(paste_link))
             else:
-                await client.send_message(message.channel, "You don't have "
+                yield from client.send_message(message.channel, "You don't have "
                                           "permission to request chatlogs.")
 
     """elif content.startswith('!kick'):

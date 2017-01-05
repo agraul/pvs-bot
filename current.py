@@ -701,10 +701,7 @@ def on_message(message):
             yield from add_diamond(message)
         elif message.content.lower().startswith('-!diamond+'):
             yield from del_diamond(message)
-      """  elif message.content.lower().startswith('-!masters'):
-            yield from del_masters(message)
-        elif message.content.lower().startswith('-!challenger'):
-            yield from del_challenger(message)"""
+
 
     # Servers
         elif message.content.lower().startswith('+!euw'):

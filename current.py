@@ -638,7 +638,7 @@ def on_message(message):
                                   "``-!role` (`role` has to be lowercase). See ??roles for a list of "
                                   "assignable roles. You can also verify your"
                                   " league by using "
-                                  "`!verify summonername,region`. Use ??verify"
+                                  "`!verify summonername,region`. Use `??verify`"
                                   " to learn more.")
         elif message.content.startswith('??verify'):
             yield from client.send_message(message.channel, "To verify your account follow these"

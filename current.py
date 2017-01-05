@@ -628,14 +628,14 @@ def on_message(message):
         if message.content.startswith('??roles'):
             yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"
-                                       "Regions: na, euw, eune, br, oce, china,"
-                                       " lan, las, kr, tr, garena\nRanks: bronze, silver, gold, "
-                                       "platinum, diamond+\nRoles: adc, support,"
-                                       " mid, top, jungle\n")
+                                       "Regions: NA, EUW, EUNE, BR, OCE, CHINA,"
+                                       " LAN, LAS, KR, TR, GARENA\nRanks: Bronze, Silver, Gold, "
+                                       "Platinum, Diamond+\nRoles: ADC, Support,"
+                                       " Mid, Top, Jungle\n")
         elif message.content.startswith('??help'):
             yield from client.send_message(message.channel, "You can add yourself to roles by "
-                                  "typing `+!role` and remove yourself with "
-                                  "``-!role` (`role` has to be lowercase). See ??roles for a list of "
+                                  "typing `+!ROLE` and remove yourself with "
+                                  "``-!ROLE`. See ??roles for a list of "
                                   "assignable roles. You can also verify your"
                                   " league by using "
                                   "`!verify summonername,region`. Use `??verify`"

@@ -624,7 +624,7 @@ def on_message(message):
 
     # Commands
     #Help Commands
-    if (str(channel) == 'rank-assignment'):
+    if (str(channel) == 'role-assignment'):
         if message.content.startswith('??roles'):
             yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"

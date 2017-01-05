@@ -98,7 +98,7 @@ class RankGetter(object):
 
     def verify_rank(self, name, region):
         id = self._get_summoner_id(name, region)
-        if self._get_rune_name(id, region) == "Plats vs Silvers":
+        if self._get_rune_name(id, region) == "summonersplaza":
             return self._get_rank(id, region)
         else:
             return "Error"
@@ -121,9 +121,7 @@ def verify(message):
         if rank == "Error":
             yield from client.send_message(message.channel, "To verify rank, "
                                            "please set the name of your first "
-                                           "rune page to 'Plats vs Silvers'. "
-                                           "Make sure you typed the name of "
-                                           "your account correctly too.")
+                                           "rune page to 'summonersplaza'.")
         elif rank == "Unranked":
             yield from client.send_message(message.channel, "You are currently "
                                            "not ranked in dynamic queue "
@@ -322,6 +320,15 @@ def add_diamond(message):
     yield from client.send_message(message.channel,
                                    "You have been added to {}".format(role))
 
+def add_diamondPlus(message):
+    role = discord.utils.get(message.server.roles, name='Diamond +')
+    roles = message.author.roles
+    l = [role]
+    for r in roles:
+        if r.name != "Verified":
+            l.append(discord.utils.get(message.server.roles, name=r.name))
+    yield from client.replace_roles(message.author, *l)
+    yield from client.send_message(message.channel, "You have been added to {}".format(role))
 
 def del_diamond(message):
     author = message.author
@@ -330,6 +337,12 @@ def del_diamond(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
+def del_diamondPlus(message):
+    author = message.author
+    role = discord.utils.get(message.server.roles, name='Diamond +')
+    yield from client.send_message(message.channel,
+                                   "You have been removed from {}".format(role))
+    yield from client.remove_roles(author, role)
 
 def del_masters(message):
     author = message.author
@@ -610,142 +623,150 @@ def on_message(message):
                                            str(content))
 
     # Commands
-
-
-# Help Commands
-    if message.content.startswith('?!roles'):
-        yield from client.send_message(message.channel,
+    #Help Commands
+    if (str(channel) == 'rank-assignment'):
+        if message.content.startswith('??roles'):
+            yield from client.send_message(message.channel,
                                        "Here is a list of available roles:\n"
-                                       "Regions: NA, EUW, EUNE, BR, OCE, CHINA,"
-                                       " LAN\nRanks: Bronze, Silver, Gold, "
-                                       "Platinum, Diamond. (Masters and "
-                                       "Challenger must be obtained through the"
-                                       " verify method)\nRoles: ADC, Support,"
-                                       " Mid, Top, Jungle\nType '?!verify' to "
-                                       "learn ow to get the verified tag for "
-                                       "your rank")
-    elif message.content.startswith('?!help'):
-        yield from client.send_message(message.channel, "You can add / remove "
-                                       "roles by typig +!role or -!role and "
-                                       "substituting 'role' with the desired "
-                                       "role. See ?!roles for a list of "
-                                       "available roles.")
-    elif message.content.startswith('?!verify'):
-        yield from client.send_message(message.channel, "To verify your "
-                                       "account, follow these steps:\n1.) Set "
-                                       "the name of your first rune page to "
-                                       "'Plats vs Silvers'\n2.) Find your "
-                                       "regionID by typing '?!regions'\n3.) "
-                                       "Type '!verify SummonerName,RegionID' "
-                                       "substituting in your name and region")
-    elif message.content.startswith('?!regions'):
-        yield from client.send_message(message.channel, "North America = na, "
+                                       "Regions: na, euw, eune, br, oce, china,"
+                                       " lan, las, kr, tr, garena\nRanks: bronze, silver, gold, "
+                                       "platinum, diamond+\nRoles: adc, support,"
+                                       " mid, top, jungle\n")
+        elif message.content.startswith('??help'):
+            yield from client.send_message(message.channel, "You can add yourself to roles by "
+                                  "typing `+!role` and remove yourself with "
+                                  "``-!role` (`role` has to be lowercase). See ??roles for a list of "
+                                  "assignable roles. You can also verify your"
+                                  " league by using "
+                                  "`!verify summonername,region`. Use ??verify"
+                                  "to learn more.")
+        elif message.content.startswith('??verify'):
+            yield from client.send_message(message.channel, "To verify your account follow these"
+                                  "steps:\n1.: Rename your first rune page to"
+                                  "'summonersplaza'\n2.: Type `!verify summoner"
+                                  "name,region`. Verification is not available "
+                                  "for all regions.")
+        elif message.content.startswith('??regions'):
+            yield from client.send_message(message.channel, "North America = na, "
                                        "EU West = euw, EU North East = eune "
                                        "Latin America North = lan, Latin "
                                        "America South = las, Oceania = oce, "
-                                       "Japan = jp, Korea = kr, Brazil = br, "
-                                       "Russia = ru, Turkey = tr")
-    elif message.content.lower().startswith('+!coach'):
-        yield from add_coach(message)
-    elif message.content.lower().startswith('-!coach'):
-        yield from del_coach(message)
+                                       "Korea = kr, Brazil = br, "
+                                       "Turkey = tr, GARENA = garena")
+        elif message.content.lower().startswith('+!coach'):
+            yield from add_coach(message)
+        elif message.content.lower().startswith('-!coach'):
+            yield from del_coach(message)
 
 # Roles
-    elif message.content.lower().startswith('+!support'):
-        yield from add_support(message)
-    elif message.content.lower().startswith('+!adc'):
-        yield from add_adc(message)
-    elif message.content.lower().startswith('+!mid'):
-        yield from add_mid(message)
-    elif message.content.lower().startswith('+!top'):
-        yield from add_top(message)
-    elif message.content.lower().startswith('+!jungle'):
-        yield from add_jungle(message)
-    elif message.content.lower().startswith('-!support'):
-        yield from del_support(message)
-    elif message.content.lower().startswith('-!adc'):
-        yield from del_adc(message)
-    elif message.content.lower().startswith('-!mid'):
-        yield from del_mid(message)
-    elif message.content.lower().startswith('-!top'):
-        yield from del_top(message)
-    elif message.content.lower().startswith('-!jungle'):
-        yield from del_jungle(message)
+        elif message.content.lower().startswith('+!support'):
+            yield from add_support(message)
+        elif message.content.lower().startswith('+!adc'):
+            yield from add_adc(message)
+        elif message.content.lower().startswith('+!mid'):
+            yield from add_mid(message)
+        elif message.content.lower().startswith('+!top'):
+            yield from add_top(message)
+        elif message.content.lower().startswith('+!jungle'):
+            yield from add_jungle(message)
+        elif message.content.lower().startswith('-!support'):
+            yield from del_support(message)
+        elif message.content.lower().startswith('-!adc'):
+            yield from del_adc(message)
+        elif message.content.lower().startswith('-!mid'):
+            yield from del_mid(message)
+        elif message.content.lower().startswith('-!top'):
+            yield from del_top(message)
+        elif message.content.lower().startswith('-!jungle'):
+            yield from del_jungle(message)
 
 # Non-verified ranks
-    elif message.content.lower().startswith('+!bronze'):
-        yield from add_bronze(message)
-    elif message.content.lower().startswith('-!bronze'):
-        yield from del_bronze(message)
-    elif message.content.lower().startswith('+!silver'):
-        yield from add_silver(message)
-    elif message.content.lower().startswith('-!silver'):
-        yield from del_silver(message)
-    elif message.content.lower().startswith('+!gold'):
-        yield from add_gold(message)
-    elif message.content.lower().startswith('-!gold'):
-        yield from del_gold(message)
-    elif message.content.lower().startswith('+!platinum'):
-        yield from add_platinum(message)
-    elif message.content.lower().startswith('-!platinum'):
-        yield from del_platinum(message)
-    elif message.content.lower().startswith('+!diamond'):
-        yield from add_diamond(message)
-    elif message.content.lower().startswith('-!diamond'):
-        yield from del_diamond(message)
-    elif message.content.lower().startswith('-!masters'):
-        yield from del_masters(message)
-    elif message.content.lower().startswith('-!challenger'):
-        yield from del_challenger(message)
+        elif message.content.lower().startswith('+!bronze'):
+            yield from add_bronze(message)
+        elif message.content.lower().startswith('-!bronze'):
+            yield from del_bronze(message)
+        elif message.content.lower().startswith('+!silver'):
+            yield from add_silver(message)
+        elif message.content.lower().startswith('-!silver'):
+            yield from del_silver(message)
+        elif message.content.lower().startswith('+!gold'):
+            yield from add_gold(message)
+        elif message.content.lower().startswith('-!gold'):
+            yield from del_gold(message)
+        elif message.content.lower().startswith('+!platinum'):
+            yield from add_platinum(message)
+        elif message.content.lower().startswith('-!platinum'):
+            yield from del_platinum(message)
+        elif message.content.lower().startswith('+!diamond+'):
+            yield from add_diamond(message)
+        elif message.content.lower().startswith('-!diamond+'):
+            yield from del_diamond(message)
+      """  elif message.content.lower().startswith('-!masters'):
+            yield from del_masters(message)
+        elif message.content.lower().startswith('-!challenger'):
+            yield from del_challenger(message)"""
 
-# Servers
-    elif message.content.lower().startswith('+!euw'):
-        yield from add_euw(message)
-    elif message.content.lower().startswith('-!euw'):
-        yield from del_euw(message)
-    elif message.content.lower().startswith('+!na'):
-        yield from add_na(message)
-    elif message.content.lower().startswith('-!na'):
-        yield from del_na(message)
-    elif message.content.lower().startswith('+!oce'):
-        yield from add_oce(message)
-    elif message.content.lower().startswith('-!oce'):
-        yield from del_oce(message)
-    elif message.content.lower().startswith('+!eune'):
-        yield from add_eune(message)
-    elif message.content.lower().startswith('-!eune'):
-        yield from del_eune(message)
-    elif message.content.lower().startswith('+!lan'):
-        yield from add_lan(message)
-    elif message.content.lower().startswith('-!lan'):
-        yield from del_lan(message)
-    elif message.content.lower().startswith('+!br'):
-        yield from add_brazil(message)
-    elif message.content.lower().startswith('-!br'):
-        yield from del_brazil(message)
-    elif message.content.lower().startswith('+!china'):
-        yield from add_china(message)
-    elif message.content.lower().startswith('-!china'):
-        yield from del_china(message)
-# Update/link account
-    elif message.content.startswith('!verify'):
-        yield from verify(message)
-
-# Admin Commands
-    elif message.content.startswith('!savelogs'):
-        if admin in message.author.roles:
-            logs = yield from savelogs(message)
-            if logs == "":
-                yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
+    # Servers
+        elif message.content.lower().startswith('+!euw'):
+            yield from add_euw(message)
+        elif message.content.lower().startswith('-!euw'):
+            yield from del_euw(message)
+        elif message.content.lower().startswith('+!na'):
+            yield from add_na(message)
+        elif message.content.lower().startswith('-!na'):
+            yield from del_na(message)
+        elif message.content.lower().startswith('+!oce'):
+            yield from add_oce(message)
+        elif message.content.lower().startswith('-!oce'):
+            yield from del_oce(message)
+        elif message.content.lower().startswith('+!eune'):
+            yield from add_eune(message)
+        elif message.content.lower().startswith('-!eune'):
+            yield from del_eune(message)
+        elif message.content.lower().startswith('+!lan'):
+            yield from add_lan(message)
+        elif message.content.lower().startswith('-!lan'):
+            yield from del_lan(message)
+        elif message.content.lower().startswith('+!br'):
+            yield from add_brazil(message)
+        elif message.content.lower().startswith('-!br'):
+            yield from del_brazil(message)
+        elif message.content.lower().startswith('+!china'):
+            yield from add_china(message)
+        elif message.content.lower().startswith('-!china'):
+            yield from del_china(message)
+        elif message.content.lower().startswith('+!las'):
+            yield from add_lan(message)
+        elif message.content.lower().startswith('-!las'):
+            yield from del_lan(message)
+        elif message.content.lower().startswith('+!kr'):
+            yield from add_lan(message)
+        elif message.content.lower().startswith('-!kr'):
+            yield from del_lan(message)
+        elif message.content.lower().startswith('+!turkey'):
+            yield from add_lan(message)
+        elif message.content.lower().startswith('-!turkey'):
+            yield from del_lan(message)
+        elif message.content.lower().startswith('+!garena'):
+            yield from add_lan(message)
+        elif message.content.lower().startswith('-!garena'):
+            yield from del_lan(message)
+    # Update/link account
+        elif message.content.startswith('!verify'):
+            yield from verify(message)
+    # Admin Commands
+        elif message.content.startswith('!savelogs'):
+            if admin in message.author.roles or Moderator in message.author.roles:
+                logs = yield from savelogs(message)
+                if logs == "":
+                    yield from client.send_message(message.channel, "The number you input was invalid, or some other error occured. Use the format !savelogs ChannelName NumberOfMessages")
+                else:
+                    print(logs)
+                    #Hello merK
+                    #The string S is a string with all the relevent chatlogs in order, broken apart by new line characters
+                    #If you instead want the raw list, use the method savelogs2 instead
             else:
-                # print(logs)
-                paste_link = yield from pastebin('Chatlog', logs)
-                paste_link = paste_link.decode('utf8')
-                yield from client.send_message(message.channel, "Here is the link: {}".format(paste_link))
-                # Hello merK
-                # The string S is a string with all the relevent chatlogs in order,
-                # broken apart by new line characters
-                # If you instead want the raw list, use the function savelogs2 instead
-        else:
-            yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
+                yield from client.send_message(message.channel, "You are not an admin. Who do you think you are fooling? You think I'll stand for this? I will.")
+
 client.run(id.token1())
+#client.run('MjA3NjI3MzczNjc0MzY0OTI4.CoYx5g.oKRKeZFXWah9hlTlq3qk7gCJE28')

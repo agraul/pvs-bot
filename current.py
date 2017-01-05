@@ -639,7 +639,7 @@ def on_message(message):
                                   "assignable roles. You can also verify your"
                                   " league by using "
                                   "`!verify summonername,region`. Use ??verify"
-                                  "to learn more.")
+                                  " to learn more.")
         elif message.content.startswith('??verify'):
             yield from client.send_message(message.channel, "To verify your account follow these"
                                   "steps:\n1.: Rename your first rune page to"

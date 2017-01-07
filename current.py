@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!python3
 import asyncio
 import discord
 import requests
@@ -698,9 +698,9 @@ def on_message(message):
         elif message.content.lower().startswith('-!platinum'):
             yield from del_platinum(message)
         elif message.content.lower().startswith('+!diamond+'):
-            yield from add_diamond(message)
+            yield from add_diamondPlus(message)
         elif message.content.lower().startswith('-!diamond+'):
-            yield from del_diamond(message)
+            yield from del_diamondPlus(message)
 
 
     # Servers

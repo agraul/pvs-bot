@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
 #!/usr/bin/python3
-=======
-#!python3
->>>>>>> Stashed changes
 import discord
 import asyncio
 import requests
@@ -79,6 +75,7 @@ class RankGetter(object):
     def _get_rank(self, id, region):
         try:
             api_url = URL['get_league'].format(
+                version=API_VERSIONS['get_league'], id=id)
             league = self._request(api_url, region.rstrip())[str(id)][0]
             tier = league['tier']
             division = league['entries'][0]['division']
@@ -116,9 +113,11 @@ class RankGetter(object):
         else:
             return "Error"
 
+
 rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
 ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
          "Challenger"]
+
 
 @asyncio.coroutine
 def verify(message):  # check elo and assign role
@@ -137,8 +136,9 @@ def verify(message):  # check elo and assign role
                                       "please set the name of your first "
                                       "rune page to 'summonersplaza'.")
         elif rank == "Unranked":
-            yield from client.send_message(message.channel, "You are not ranked in "
-                                      "dynamic queue.")
+            yield from client.send_message(message.channel,
+                                           "You are not ranked in "
+                                           "dynamic queue.")
         else:
             roleList = [discord.utils.get(message.server.roles,
                         name='Verified'), rank2, region]
@@ -147,11 +147,14 @@ def verify(message):  # check elo and assign role
                     roleList.append(discord.utils.get(message.server.roles,
                                                       name=r.name))
             yield from client.replace_roles(author, *roleList)
-            yield from client.send_message(message.channel, "You have been added to"
-                                      " {}".format(rank2))
+            yield from client.send_message(message.channel,
+                                           "You have been added to {}".format(
+                                               rank2))
     except:
-        yield from client.send_message(message.channel, "Invalid format. Correct "
-                                  "syntax is `!verify summoner,region`")
+        yield from client.send_message(message.channel, "Invalid format."
+                                       "Correct syntax is `!verify "
+                                       "summoner,region`")
+
 
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
@@ -166,56 +169,60 @@ async def role_add(message):
     author = message.author
     user_input = message.content[2:]
     role = discord.utils.get(message.server.roles, name=user_input)
-    roleLower = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpper = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTitle = discord.utils.get(message.server.roles, name=user_input.title())
+    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
+    roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
+    roleTit = discord.utils.get(message.server.roles, name=user_input.title())
 
     if str(role) != "None" and str(role) in assignable_roles:
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
-    elif str(roleLower) != "None" and str(roleLower) in assignable_roles:
-        await client.add_roles(author, roleLower)
+    elif str(roleLow) != "None" and str(roleLow) in assignable_roles:
+        await client.add_roles(author, roleLow)
         await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleLower))
-    elif str(roleUpper) != "None" and str(roleUpper) in assignable_roles:
-        await client.add_roles(author, roleUpper)
+                                  .format(roleLow))
+    elif str(roleUpp) != "None" and str(roleUpp) in assignable_roles:
+        await client.add_roles(author, roleUpp)
         await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleUpper))
-    elif str(roleTitle) != "None" and str(roleTitle) in assignable_roles:
-        await client.add_roles(author, roleTitle)
+                                  .format(roleUpp))
+    elif str(roleTit) != "None" and str(roleTit) in assignable_roles:
+        await client.add_roles(author, roleTit)
         await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleTitle))
+                                  .format(roleTit))
     else:
-        await client.send_message(message.channel, "Please enter a valid role.")
+        await client.send_message(message.channel,
+                                  "Please enter a valid role.")
+
 
 # function for generic role self-removal
 async def role_strip(message):
     author = message.author
     user_input = message.content[2:]
     role = discord.utils.get(message.server.roles, name=user_input)
-    roleLower = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpper = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTitle = discord.utils.get(message.server.roles, name=user_input.title())
+    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
+    roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
+    roleTit = discord.utils.get(message.server.roles, name=user_input.title())
 
     if str(role) != "None":
         await client.remove_roles(author, role)
         await client.send_message(message.channel, "You have been removed from"
                                   " {}".format(role))
-    elif str(roleLower) != "None":
-        await client.remove_roles(author, roleLower)
+    elif str(roleLow) != "None":
+        await client.remove_roles(author, roleLow)
         await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleLower))
-    elif str(roleUpper) != "None":
-        await client.remove_roles(author, roleUpper)
+                                  " {}".format(roleLow))
+    elif str(roleUpp) != "None":
+        await client.remove_roles(author, roleUpp)
         await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleUpper))
-    elif str(roleTitle) != "None":
-        await client.remove_roles(author, roleTitle)
+                                  " {}".format(roleUpp))
+    elif str(roleTit) != "None":
+        await client.remove_roles(author, roleTit)
         await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleTitle))
+                                  " {}".format(roleTit))
     else:
-        await client.send_message(message.channel, "Please enter a valid role.")
+        await client.send_message(message.channel,
+                                  "Please enter a valid role.")
+
 
 # function to format and filter log in #chatlog and return a string
 async def savelogs(message):
@@ -337,13 +344,14 @@ def on_message(message):
     timestamp = message.timestamp.strftime('%b %d: %H:%M')
     content = message.content
     channel = message.channel
+    roleAssignmentChannel = discord.utils.get(message.server.channel,
+                                              name='role-assignment')
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
         yield from client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
-                                    .format(timestamp, channel,message.author,
+                                    .format(timestamp, channel, message.author,
                                             content.replace('@', '@ ')))
     if content.startswith('+!'):
-        if channel == discord.utils.get(message.server.channels,
-                                        name='role-assignment'):
+        if channel == roleAssignmentChannel:
             if content[2:].lower() == 'coach':
                 for r in message.author.roles:
                     if r.name == 'Diamond +' or r.name == 'Platinum':
@@ -356,7 +364,7 @@ def on_message(message):
                             unverified = True
                     if unverified:
                         yield from client.send_message(channel,
-                                               "Please verify your rank first.")
+                                            "Please verify your rank first.")
                     else:
                         yield from role_add(message)
                 else:
@@ -368,29 +376,28 @@ def on_message(message):
                 yield from role_add(message)
 
     elif content.startswith('-!'):
-        if channel == discord.utils.get(message.server.channels,
-                                        name='role-assignment'):
+        if channel == roleAssignmentChannel:
             yield from role_strip(message)
 
-    elif content.startswith('??help') and channel == discord.utils.get(
-        message.server.channels, name='role-assignment'):
-        yield from client.send_message(channel, "You can add yourself to roles by "
+    elif content.startswith('??help') and channel == roleAssignmentChannel:
+        yield from client.send_message(channel,
+                                  "You can add yourself to roles by "
                                   "typing `+!ROLE` and remove yourself with "
                                   "``-!ROLE`. See `??roles` for a list of "
                                   "assignable roles. You can also verify your"
                                   " league by using `!verify summonername,"
                                   "region`. Use `??verify` to learn more.")
-    elif content.startswith('??verify') and channel == discord.utils.get(
-        message.server.channels, name='role-assignment'):
-        yield from client.send_message(channel, "To verify your account follow these"
+    elif content.startswith('??verify') and channel == roleAssignmentChannel:
+        yield from client.send_message(channel,
+                                  "To verify your account follow these"
                                   "steps:\n1.: Rename your first rune page to"
-                                  "'summonersplaza'\n2.: Type `!verify summoner"
-                                  "name,region`. Verification is not available "
-                                  "for all regions.")
+                                  "'summonersplaza'\n2.: Type `!verify "
+                                  "summonername,region`. Verification is not "
+                                  "available for all regions.")
 
-    elif content.startswith('??roles') and channel == discord.utils.get(
-        message.server.channels, name='role-assignment'):
-            yield from client.send_message(channel, "Roles you can use me for: "
+    elif content.startswith('??roles') and channel == roleAssignmentChannel:
+            yield from client.send_message(channel,
+                                      "Roles you can use me for: "
                                       "`{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
@@ -412,13 +419,16 @@ def on_message(message):
                     title = "Chatlog for {}".format(channel)
                     paste_link = yield from pastebin(title, logs)
                     paste_link.decode('utf-8')
-                    yield from client.send_message(message.channel, "Here is the "
-                                              "chatlog: {}".format(paste_link))
+                    yield from client.send_message(message.channel,
+                                                   "Here is the chatlog: {}"
+                                                   .format(paste_link))
             else:
-                yield from client.send_message(message.channel, "You don't have "
-                                          "permission to request chatlogs.")
+                yield from client.send_message(message.channel,
+                                               "You don't have permission to "
+                                               "request chatlogs.")
 
-    """elif content.startswith('!kick'):
+    """
+    elif content.startswith('!kick'):
         async for r in message.author.roles:
             if r.name in privileged_roles:
                 await kick_user(message)
@@ -429,6 +439,7 @@ def on_message(message):
                 admin_channel = discord.utils.get(message.server.channels,
                                                   name='admin')
                 await client.send_message(admin_channel, "{} tried to use "
-                                          "`!kick` in {}".format(message.author,
-                                                                 message.channel))"""
-client.run(id.token1())
+                "`!kick` in {}".format(message.author,message.channel))"""
+
+
+client.run(id.token2())

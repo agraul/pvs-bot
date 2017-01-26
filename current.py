@@ -1,4 +1,5 @@
-#!python3
+#!python321 01:00 current.py
+
 import asyncio
 import discord
 import requests
@@ -504,7 +505,8 @@ def del_coach(message):
                                    "You have been removed from {}".format(role))
     yield from client.remove_roles(author, role)
 
-async def savelogs(message):
+@asyncio.coroutine
+def savelogs(message):
     logs = []
     command, channel, numberString = message.content.split(' ')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
@@ -512,7 +514,7 @@ async def savelogs(message):
     channel = channel.lower()
     try:
         number = int(numberString)
-        async for log in client.logs_from(chatlog, limit=number):
+        for log in client.logs_from(chatlog, limit=number):
             if ("**" + channel + "**") in log.content:
                 logs.append(log)
         for l in reversed(logs):
@@ -521,7 +523,8 @@ async def savelogs(message):
     except:
         return s
 
-async def savelogs2(message):
+@asyncio.coroutine
+def savelogs2(message):
     logs = []
     command, channel, numberString = message.content.split(' ')
     chatlog = discord.utils.get(message.server.channels, name='chatlog')
@@ -529,7 +532,7 @@ async def savelogs2(message):
     channel = channel.lower()
     try:
         number = int(numberString)
-        async for log in client.logs_from(chatlog, limit=number):
+        for log in client.logs_from(chatlog, limit=number):
             if ("**" + channel + "**") in log.content:
                 logs.append(log)
         return reversed(logs)

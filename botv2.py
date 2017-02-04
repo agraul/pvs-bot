@@ -333,8 +333,8 @@ async def on_message_delete(message):
 
 @client.event
 async def on_message_edit(before, after):
-    chatlog = discord.utils.get(message.server.channels, name='chatlog')
-    timestamp = message.timestamp.strftime('%b %d: %H:%M')
+    chatlog = discord.utils.get(before.server.channels, name='chatlog')
+    timestamp = before.timestamp.strftime('%b %d: %H:%M')
     channel = before.channel
     author = before.author
     content_before = before.content.replace('@', '@ ')

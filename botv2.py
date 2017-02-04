@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/home/deploy/bots/pvs-bot/discord/bin/python
 import discord
 import asyncio
 import requests
@@ -160,7 +160,7 @@ def verify(message):  # check elo and assign role
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'KR', 'Turkey', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
-                    'Diamond +', 'Coach']
+                    'Diamond +', 'Coach', 'NLFG']
 privileged_roles = ['admin', 'Moderator']
 
 

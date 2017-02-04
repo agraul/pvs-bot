@@ -208,7 +208,6 @@ async def role_add(message):
                                   "Please enter a valid role.")
 
 
-
 # function for generic role self-removal
 async def role_strip(message):
     author = message.author
@@ -344,7 +343,7 @@ async def on_message_edit(before, after):
     author = before.author
     content_before = before.content.replace('@', '@ ')
     content_after = after.content.replace('@', '@ ')
-    if str(message.channel) != 'chatlog':
+    if str(channel) != 'chatlog':
         await client.send_message(chatlog, "{} UTC: `EDITED`\n\t `BEFORE`"
                                   "**{}:** {}: {}\n\t`AFTER` **{}:** {}: {}"
                                   .format(timestamp, channel, author,

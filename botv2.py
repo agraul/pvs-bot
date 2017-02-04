@@ -162,6 +162,7 @@ assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
                     'Diamond +', 'Coach', 'NLFG']
 privileged_roles = ['admin', 'Moderator']
+rank_roles = ['Bonze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 
 
 # function for generic role self-add
@@ -172,26 +173,40 @@ async def role_add(message):
     roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
     roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
     roleTit = discord.utils.get(message.server.roles, name=user_input.title())
+    verified_role = discord.utils.get(message.server.roles, name='Verified')
 
     if str(role) != "None" and str(role) in assignable_roles:
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
+        if str(role) in rank_roles:
+            try:
+                await client.remove_roles(author, verified_role)
     elif str(roleLow) != "None" and str(roleLow) in assignable_roles:
         await client.add_roles(author, roleLow)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleLow))
+        if str(roleLow) in rank_roles:
+            try:
+                await client.remove_roles(author, verified_role)
     elif str(roleUpp) != "None" and str(roleUpp) in assignable_roles:
         await client.add_roles(author, roleUpp)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleUpp))
+        if str(roleUpp) in rank_roles:
+            try:
+                await client.remove_roles(author, verified_role)
     elif str(roleTit) != "None" and str(roleTit) in assignable_roles:
         await client.add_roles(author, roleTit)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleTit))
+        if str(roleTit) in rank_roles:
+            try:
+                await client.remove_roles(author, verified_role)
     else:
         await client.send_message(message.channel,
                                   "Please enter a valid role.")
+
 
 
 # function for generic role self-removal
@@ -344,7 +359,7 @@ def on_message(message):
     timestamp = message.timestamp.strftime('%b %d: %H:%M')
     content = message.content
     channel = message.channel
-    roleAssignmentChannel = discord.utils.get(message.server.channel,
+    roleAssignmentChannel = discord.utils.get(message.server.channels,
                                               name='role-assignment')
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
         yield from client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"

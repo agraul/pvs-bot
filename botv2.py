@@ -180,28 +180,24 @@ async def role_add(message):
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
         if str(role) in rank_roles:
-            try:
                 await client.remove_roles(author, verified_role)
     elif str(roleLow) != "None" and str(roleLow) in assignable_roles:
         await client.add_roles(author, roleLow)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleLow))
         if str(roleLow) in rank_roles:
-            try:
                 await client.remove_roles(author, verified_role)
     elif str(roleUpp) != "None" and str(roleUpp) in assignable_roles:
         await client.add_roles(author, roleUpp)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleUpp))
         if str(roleUpp) in rank_roles:
-            try:
                 await client.remove_roles(author, verified_role)
     elif str(roleTit) != "None" and str(roleTit) in assignable_roles:
         await client.add_roles(author, roleTit)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleTit))
         if str(roleTit) in rank_roles:
-            try:
                 await client.remove_roles(author, verified_role)
     else:
         await client.send_message(message.channel,

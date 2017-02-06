@@ -5,7 +5,7 @@ import requests
 import datetime
 import urllib.parse
 import urllib.request
-import id
+#import id
 
 client = discord.Client()
 # TODO: TESTING
@@ -108,7 +108,7 @@ class RankGetter(object):
 
     def verify_rank(self, name, region):
         id = self._get_summoner_id(name, region)
-        if self._get_rune_name(id, region) == "summonersplaza":
+        if self._get_rune_name(id, region).lower() == "summonersplaza":
             return self._get_rank(id, region)
         else:
             return "Error"
@@ -125,7 +125,7 @@ def verify(message):  # check elo and assign role
         author = message.author
         content = message.content[8:].split(',')
         rank = rg.verify_rank(content[0], content[1].lower().strip(" "))
-        rank2 = discord.utils.get(message.server.roles, name=rank)
+        
         region = discord.utils.get(message.server.roles,
                                    name=content[1].upper().strip(" "))
         roles = author.roles
@@ -139,7 +139,11 @@ def verify(message):  # check elo and assign role
             yield from client.send_message(message.channel,
                                            "You are not ranked in "
                                            "dynamic queue.")
+
         else:
+            if rank.lower() == "diamond" or rank.lower == "masters" or rank.lower == "challenger":
+                rank = "Diamond +"
+            rank2 = discord.utils.get(message.server.roles, name=rank)
             roleList = [discord.utils.get(message.server.roles,
                         name='Verified'), rank2, region]
             for r in message.author.roles:
@@ -162,7 +166,7 @@ assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
                     'Diamond +', 'Coach', 'NLFG']
 privileged_roles = ['admin', 'Moderator']
-rank_roles = ['Bonze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
+rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 
 
 # function for generic role self-add
@@ -456,4 +460,4 @@ def on_message(message):
                 "`!kick` in {}".format(message.author,message.channel))"""
 
 
-client.run(id.token1())
+client.run('MjA3NjI3MzczNjc0MzY0OTI4.C3o8HA.7nxmSxb2KM_V2M2ZJQmqq_Dsmio')#id.token1())

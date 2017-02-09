@@ -125,7 +125,7 @@ def verify(message):  # check elo and assign role
         author = message.author
         content = message.content[8:].split(',')
         rank = rg.verify_rank(content[0], content[1].lower().strip(" "))
-        
+
         region = discord.utils.get(message.server.roles,
                                    name=content[1].upper().strip(" "))
         roles = author.roles
@@ -163,7 +163,7 @@ def verify(message):  # check elo and assign role
 # lists of roles to check against
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
                     'KR', 'Turkey', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
-                    'Support', 'Bonze', 'Silver', 'Gold', 'Platinum',
+                    'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
                     'Diamond +', 'Coach', 'NLFG']
 privileged_roles = ['admin', 'Moderator']
 rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']

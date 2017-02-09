@@ -5,7 +5,7 @@ import requests
 import datetime
 import urllib.parse
 import urllib.request
-#import id
+import id
 
 client = discord.Client()
 # TODO: TESTING
@@ -460,4 +460,4 @@ def on_message(message):
                 "`!kick` in {}".format(message.author,message.channel))"""
 
 
-client.run('MjA3NjI3MzczNjc0MzY0OTI4.C3o8HA.7nxmSxb2KM_V2M2ZJQmqq_Dsmio')#id.token1())
+client.run(id.token1())

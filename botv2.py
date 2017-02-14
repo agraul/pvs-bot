@@ -401,7 +401,7 @@ def on_message(message):
         yield from client.send_message(channel,
                                   "You can add yourself to roles by "
                                   "typing `+!ROLE` and remove yourself with "
-                                  "``-!ROLE`. See `??roles` for a list of "
+                                  "`-!ROLE`. See `??roles` for a list of "
                                   "assignable roles. You can also verify your"
                                   " league by using `!verify summonername,"
                                   "region`. Use `??verify` to learn more.")

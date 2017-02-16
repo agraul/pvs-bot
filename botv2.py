@@ -300,6 +300,7 @@ async def kick_user(message):
 @client.event
 async def on_member_join(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')
     await client.send_message(chatlog, "{} UTC: `JOINED` {}".format(timestamp,
                                                                     member))
 
@@ -307,6 +308,7 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')
     await client.send_message(chatlog, "{} UTC: `LEFT` {}".format(timestamp,
                                                                   member))
 
@@ -315,6 +317,7 @@ async def on_member_remove(member):
 @asyncio.coroutine
 def on_member_update(before, after):
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
+    timestamp = message.timestamp.strftime('%b %d: %H:%M')
     name_before = before.display_name
     name_after = after.display_name
     if name_after is not None and name_before is not None and \
@@ -371,6 +374,7 @@ def on_message(message):
     if content.startswith('+!'):
         if channel == roleAssignmentChannel:
             if content[2:].lower() == 'coach':
+                high_elo = False
                 for r in message.author.roles:
                     if r.name == 'Diamond +' or r.name == 'Platinum':
                         high_elo = True

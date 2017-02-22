@@ -1,4 +1,3 @@
-#!/home/deploy/bots/pvs-bot/discord/bin/python
 import discord
 import asyncio
 import requests
@@ -375,6 +374,7 @@ def on_message(message):
         if channel == roleAssignmentChannel:
             if content[2:].lower() == 'coach':
                 high_elo = False
+                unverified = True
                 for r in message.author.roles:
                     if r.name == 'Diamond +' or r.name == 'Platinum':
                         high_elo = True
@@ -382,8 +382,6 @@ def on_message(message):
                     for r in message.author.roles:
                         if r.name == 'Verified':
                             unverified = False
-                        else:
-                            unverified = True
                     if unverified:
                         yield from client.send_message(channel,
                                             "Please verify your rank first.")

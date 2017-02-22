@@ -96,5 +96,4 @@ pvs-bot-log.png
 
 timeout.py
 pastebin.py
-ubuntuvm/
-discord/
+discord_env/

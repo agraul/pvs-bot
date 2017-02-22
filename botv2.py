@@ -161,8 +161,8 @@ def verify(message):  # check elo and assign role
 
 
 # lists of roles to check against
-assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CHINA',
-                    'KR', 'Turkey', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
+assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CN',
+                    'KR', 'TR', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
                     'Diamond +', 'Coach', 'NLFG']
 privileged_roles = ['admin', 'Moderator']

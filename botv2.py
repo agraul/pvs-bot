@@ -8,8 +8,6 @@ import urllib.request
 import id
 
 client = discord.Client()
-# TODO: TESTING
-# TODO: !timeout
 
 # Rank Getter for verify()
 URL = {
@@ -164,7 +162,7 @@ def verify(message):  # check elo and assign role
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CN',
                     'KR', 'TR', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
-                    'Diamond +', 'Coach', 'NLFG']
+                    'Diamond +', 'Coach', 'NLFG', 'Tournament']
 privileged_roles = ['admin', 'Moderator']
 rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 

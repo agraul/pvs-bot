@@ -1,3 +1,4 @@
+#!/home/deploy/bots/pvs-bot/discord/bin/python
 import discord
 import asyncio
 import requests

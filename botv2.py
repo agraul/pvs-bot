@@ -5,6 +5,7 @@ import requests
 import datetime
 import urllib.parse
 import urllib.request
+import time
 import id
 
 client = discord.Client()
@@ -168,6 +169,7 @@ rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 
 
 # function for generic role self-add
+#TODO: delete messages after completion
 async def role_add(message):
     author = message.author
     user_input = message.content[2:]
@@ -176,37 +178,39 @@ async def role_add(message):
     roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
     roleTit = discord.utils.get(message.server.roles, name=user_input.title())
     verified_role = discord.utils.get(message.server.roles, name='Verified')
+    coach_role = discord.utils.get(message.server.roles, name="Coach")
 
     if str(role) != "None" and str(role) in assignable_roles:
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
         if str(role) in rank_roles:
-                await client.remove_roles(author, verified_role)
+                await client.remove_roles(author, verified_role, coach_role)
     elif str(roleLow) != "None" and str(roleLow) in assignable_roles:
         await client.add_roles(author, roleLow)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleLow))
         if str(roleLow) in rank_roles:
-                await client.remove_roles(author, verified_role)
+                await client.remove_roles(author, verified_role, coach_role)
     elif str(roleUpp) != "None" and str(roleUpp) in assignable_roles:
         await client.add_roles(author, roleUpp)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleUpp))
         if str(roleUpp) in rank_roles:
-                await client.remove_roles(author, verified_role)
+                await client.remove_roles(author, verified_role, coach_role)
     elif str(roleTit) != "None" and str(roleTit) in assignable_roles:
         await client.add_roles(author, roleTit)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(roleTit))
         if str(roleTit) in rank_roles:
-                await client.remove_roles(author, verified_role)
+                await client.remove_roles(author, verified_role, coach_role)
     else:
         await client.send_message(message.channel,
                                   "Please enter a valid role.")
 
 
 # function for generic role self-removal
+#TODO: delete messages after completion
 async def role_strip(message):
     author = message.author
     user_input = message.content[2:]
@@ -283,6 +287,11 @@ async def pastbin(title, content):
     return urllib.request.urlopen('http://pastebin.com/api/api_post.php',
                                   urllib.parse.urlencode(pastebin_vars).encode(
                                       'utf-8')).read()
+@asyncio.coroutine
+def cleanMessage(message):
+    time.sleep(3)
+    yield from client.delete_message(message)
+
 """# kick command
 async def kick_user(message):
     content = message.content[5:].strip()
@@ -294,19 +303,49 @@ async def kick_user(message):
                               .format(message.author.display_name))
     await client.kick(target)"""
 
+# automatic welcome message for new members
+async def welcome_member(member):
+    welcome_message = "**Welcome to Summoner's Plaza!** \n Please take a moment\
+to familiarise yourself with our rules and Bot instructions.\n\n**RULES**\
+\n1) Be polite.\n2) Keep contextless media (images, videos etc.) in #memes and\
+ generally stay on topic of the channel. Small amounts of memes are \
+tolerated in #casual-chat, #eu and #na during inactive times only.\n3) Do not \
+spam (this includes excessive venting and contextless usage of bot commands \
+outside of #bot-fun). You will be warned, followed by a timeout/silence and \
+eventual ban if you continue.\n4) Keep your messages, username and profile \
+picture SFW. Material that may be considered appropriate include the following:\
+ swimsuits, sexualized but non-explicit depictions of body parts, bloody but \
+non-gory violence, and casual mentions of clopping and fetishes (but not \
+discussion).\n5) Don't rage at others or leave games if you're premade or \
+playing PvS/customs. If you leave, you will be warned for the first offense. \
+The second offense will result in a ban.\n6) If you wish to discuss the \
+decision of a staff member, pm them or a hierarchically higher staff member.\
+\n\n**Bot instructions**\n1. You can use me to obtain regular \
+roles (for rank, region and position). Just type `+!role`. To see the list\
+ of roles this command works for type `??roles`. \n2. You can verify your\
+rank with `!verify summonername,region`. To prove that you have control \
+over an account, we require you to rename the first rune page to \
+'summonersplaza'.\n3. If you want to be pingable for questions about the \
+game, you can use `+!coach`. You have to be ranked in Platinum or higher \
+(verified).\n4. Use `-!role` to remove yourself from a role. This might \
+remove other roles too (e.g. you lose `coach` if you unverify yourself)\
+\n5. Use the `+!NLFG` command if you do **not** want to recieve pings in \
+#looking-for-game"
+    await client.send_message(member, welcome_message)
 
 @client.event
 async def on_member_join(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
-    timestamp = message.timestamp.strftime('%b %d: %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%b %d: %H:%M')
     await client.send_message(chatlog, "{} UTC: `JOINED` {}".format(timestamp,
                                                                     member))
+    await welcome_member(member)
 
 
 @client.event
 async def on_member_remove(member):
     chatlog = discord.utils.get(member.server.channels, name='chatlog')
-    timestamp = message.timestamp.strftime('%b %d: %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%b %d: %H:%M')
     await client.send_message(chatlog, "{} UTC: `LEFT` {}".format(timestamp,
                                                                   member))
 
@@ -315,7 +354,7 @@ async def on_member_remove(member):
 @asyncio.coroutine
 def on_member_update(before, after):
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
-    timestamp = message.timestamp.strftime('%b %d: %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%b %d: %H:%M')
     name_before = before.display_name
     name_after = after.display_name
     if name_after is not None and name_before is not None and \
@@ -343,7 +382,7 @@ def on_message_delete(message):
 @asyncio.coroutine
 def on_message_edit(before, after):
     chatlog = discord.utils.get(before.server.channels, name='chatlog')
-    timestamp = before.timestamp.strftime('%b %d: %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%b %d: %H:%M')
     channel = before.channel
     author = before.author
     content_before = before.content.replace('@', '@ ')
@@ -359,12 +398,17 @@ def on_message_edit(before, after):
 @client.event
 @asyncio.coroutine
 def on_message(message):
-    chatlog = discord.utils.get(message.server.channels, name='chatlog')
+
     timestamp = message.timestamp.strftime('%b %d: %H:%M')
     content = message.content
     channel = message.channel
-    roleAssignmentChannel = discord.utils.get(message.server.channels,
-                                              name='role-assignment')
+    try:
+        chatlog = discord.utils.get(message.server.channels, name='chatlog')
+        roleAssignmentChannel = discord.utils.get(message.server.channels,
+                                                name='role-assignment')
+    except:
+        print('Private message sent/recieved, or there was an issue with the chatlog/role-assignment channel')
+
     if str(channel) != 'chatlog':   # bot reposts everything not in chatlog
         yield from client.send_message(chatlog, "{} UTC: `SENT` **{}:** {}: {}"
                                     .format(timestamp, channel, message.author,
@@ -446,6 +490,12 @@ def on_message(message):
                                                "You don't have permission to "
                                                "request chatlogs.")
 
+
+    elif content.startswith('!welcome'):
+        user = discord.utils.get(message.server.members, name=content[8:].rstrip())
+        if user == '':
+            user = message.author
+        yield from welcome_member(user)
     """
     elif content.startswith('!kick'):
         async for r in message.author.roles:
@@ -459,6 +509,7 @@ def on_message(message):
                                                   name='admin')
                 await client.send_message(admin_channel, "{} tried to use "
                 "`!kick` in {}".format(message.author,message.channel))"""
+    if channel == roleAssignmentChannel:
+        yield from cleanMessage(message)
 
-
-client.run(id.token1())
+client.run(id.token2())

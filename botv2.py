@@ -163,7 +163,7 @@ def verify(message):  # check elo and assign role
 assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CN',
                     'KR', 'TR', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
                     'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
-                    'Diamond +', 'Coach', 'NLFG', 'Tournament']
+                    'Diamond +', 'Coach', 'NLFG', 'Tournament', 'NPVS']
 privileged_roles = ['admin', 'Moderator']
 rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 
@@ -305,32 +305,44 @@ async def kick_user(message):
 
 # automatic welcome message for new members
 async def welcome_member(member):
-    welcome_message = "**Welcome to Summoner's Plaza!** \n Please take a moment\
-to familiarise yourself with our rules and Bot instructions.\n\n**RULES**\
-\n1) Be polite.\n2) Keep contextless media (images, videos etc.) in #memes and\
- generally stay on topic of the channel. Small amounts of memes are \
-tolerated in #casual-chat, #eu and #na during inactive times only.\n3) Do not \
-spam (this includes excessive venting and contextless usage of bot commands \
-outside of #bot-fun). You will be warned, followed by a timeout/silence and \
-eventual ban if you continue.\n4) Keep your messages, username and profile \
-picture SFW. Material that may be considered appropriate include the following:\
- swimsuits, sexualized but non-explicit depictions of body parts, bloody but \
-non-gory violence, and casual mentions of clopping and fetishes (but not \
-discussion).\n5) Don't rage at others or leave games if you're premade or \
-playing PvS/customs. If you leave, you will be warned for the first offense. \
-The second offense will result in a ban.\n6) If you wish to discuss the \
-decision of a staff member, pm them or a hierarchically higher staff member.\
-\n\n**Bot instructions**\n1. You can use me to obtain regular \
-roles (for rank, region and position). Just type `+!role`. To see the list\
- of roles this command works for type `??roles`. \n2. You can verify your\
-rank with `!verify summonername,region`. To prove that you have control \
-over an account, we require you to rename the first rune page to \
-'summonersplaza'.\n3. If you want to be pingable for questions about the \
-game, you can use `+!coach`. You have to be ranked in Platinum or higher \
-(verified).\n4. Use `-!role` to remove yourself from a role. This might \
-remove other roles too (e.g. you lose `coach` if you unverify yourself)\
-\n5. Use the `+!NLFG` command if you do **not** want to recieve pings in \
-#looking-for-game"
+    welcome_message = """
+**Welcome to Summoner's Plaza!**
+Please take a moment to familiarise yourself with our rules and Bot instructions.
+
+**Rules**
+1) Be polite.
+2) Keep contextless media (images, videos etc.) in #memes and generally stay on\
+ topic of the channel. Small amounts of memes are tolerated in #casual-chat, \
+#eu and #na during inactive times only.
+3) Do not spam (this includes excessive venting and contextless usage of bot \
+commands outside of #bot-fun). You will be warned, followed by a \
+timeout/silence and eventual ban if you continue.
+4) Keep your messages, username and profile picture SFW. Material that may be \
+considered appropriate include the following: *swimsuits, sexualized but \
+non-explicit depictions of body parts, bloody but non-gory violence, and casual\
+ mentions of clopping and fetishes (but not discussion).*
+5) Don't rage at others or leave games if you're premade or playing \
+PvS/customs. If you leave, you will be warned for the first offense. \
+The second offense will result in a ban.
+6) If you wish to discuss the decision of a staff member, pm them or a \
+hierarchically higher staff member.
+
+**Bot instructions**
+1. You can use me to obtain roles for rank, region, position and more.
+To see the list of roles this command works for type `??roles`. Then, use \
+`+!role` to obtain that role.
+2. If you want to get rid of a role, use `+!role`. Be careful, this can remove \
+roles you can't obtain via `+!role`
+3. You can verify your rank with `!verify summonername,region`. \
+To prove that you have control over an account, we require you to rename the \
+first rune page to 'summonersplaza'.
+4. If you want to be pingable for questions about the game, you can use \
+`+!coach`. You have to be ranked in Platinum or higher (verified).
+5. Use the `+!NLFG` command if you do **not** want to recieve pings in
+#looking-for-game
+6. Use the `+!NPVS` command if you do **not** want to recieve pings in
+#pvs
+"""
     await client.send_message(member, welcome_message)
 
 @client.event
@@ -464,7 +476,7 @@ def on_message(message):
                                       "`{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
-                                      " `{}`, `{}`, `{}`, `{}`, `{}`"
+                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`"
                                       .format(*assignable_roles))
     elif content.lower().startswith('!verify'):
         yield from verify(message)
@@ -490,26 +502,7 @@ def on_message(message):
                                                "You don't have permission to "
                                                "request chatlogs.")
 
-
-    elif content.startswith('!welcome'):
-        user = discord.utils.get(message.server.members, name=content[8:].rstrip())
-        if user == '':
-            user = message.author
-        yield from welcome_member(user)
-    """
-    elif content.startswith('!kick'):
-        async for r in message.author.roles:
-            if r.name in privileged_roles:
-                await kick_user(message)
-            else:
-                await client.send_message(message.channel, "You lack "
-                                          "permission to kick users. This "
-                                          "incident will be reported.")
-                admin_channel = discord.utils.get(message.server.channels,
-                                                  name='admin')
-                await client.send_message(admin_channel, "{} tried to use "
-                "`!kick` in {}".format(message.author,message.channel))"""
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)
 
-client.run(id.token2())
+client.run(id.token1())

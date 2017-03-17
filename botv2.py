@@ -338,10 +338,9 @@ To prove that you have control over an account, we require you to rename the \
 first rune page to 'summonersplaza'.
 4. If you want to be pingable for questions about the game, you can use \
 `+!coach`. You have to be ranked in Platinum or higher (verified).
-5. Use the `+!NLFG` command if you do **not** want to recieve pings in
+5. Use the `+!NLFG` command if you do **not** want to recieve pings in \
 #looking-for-game
-6. Use the `+!NPVS` command if you do **not** want to recieve pings in
-#pvs
+6. Use the `+!NPVS` command if you do **not** want to recieve pings in #pvs
 """
     await client.send_message(member, welcome_message)
 

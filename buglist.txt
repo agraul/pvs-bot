@@ -1,0 +1,4 @@
+#001 - moderator can't read modchat when timed out
+#002 - !timeout spams chat with 'Not allowed'
+#003 - name#id not working for !timeout
+#004 - timeout multiple at once

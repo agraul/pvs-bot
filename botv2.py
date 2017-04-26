@@ -542,9 +542,6 @@ def on_message(message):
                 allowed = True
         if allowed:
             yield from timeout_user(message)
-        else:
-            yield from client.send_message(message.channel, "Not allowed")
-
 
     elif content.startswith('!timein'):
         allowed = False
@@ -553,8 +550,6 @@ def on_message(message):
                 allowed = True
         if allowed:
             yield from end_timeout(message)
-        else:
-            yield from client.send_message(message.channel, "Not allowed")
 
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)

@@ -328,6 +328,7 @@ def end_timeout(message):
     modchat = discord.utils.get(message.server.channels, name="modchat")
     timeout_role = discord.utils.get(message.server.roles,
                                      name="Timeout")
+    message_content = message.content[7:].lstrip()
     if '#' in message_content:
         message_contents = message_content.split('#')
         user = discord.utils.get(message.server.members,

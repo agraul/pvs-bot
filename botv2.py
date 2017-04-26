@@ -307,12 +307,14 @@ def timeout_user(message):
         u_roles.append(role)
 
     timeout_list[user] = u_roles
-    yield from client.remove_roles(user, *u_roles)
-    yield from client.add_roles(user, timeout_role)
+    modchat = discord.utils.get(message.server.channels, name="modchat")
+    yield from client.replace_roles(user, timeout_role)
+    yield from client.send_message(modchat, "{} got timed out.".format(user))
 
 
 @asyncio.coroutine
 def end_timeout(message):
+    modchat = discord.utils.get(message.server.channels, name="modchat")
     timeout_role = discord.utils.get(message.server.roles,
                                      name="Timeout")
     user = discord.utils.get(message.server.members,
@@ -320,8 +322,9 @@ def end_timeout(message):
     if user is None:
         user = discord.utils.get(message.server.members,
                                  display_name=message.content[7:].lstrip())
-    yield from client.remove_roles(user, timeout_role)
-    yield from client.add_roles(user, *timeout_list[user])
+    yield from client.replace_roles(user, *timeout_list[user])
+    yield from client.send_message(modchat, "{} is no longer timed out."
+                                   .format(user))
 
 """# kick command
 async def kick_user(message):
@@ -549,6 +552,8 @@ def on_message(message):
                 allowed = True
         if allowed:
             yield from end_timeout(message)
+        else:
+            yield from client.send_message(message.channel, "Not allowed")
 
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)

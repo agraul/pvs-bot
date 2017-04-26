@@ -292,6 +292,37 @@ def cleanMessage(message):
     time.sleep(3)
     yield from client.delete_message(message)
 
+timeout_list = {}
+@asyncio.coroutine
+def timeout_user(message):
+    user = discord.utils.get(message.server.members,
+                             name=message.content[8:].lstrip())
+    if user is None:
+        user = discord.utils.get(message.server.members,
+                                 display_name=message.content[8:].lstrip())
+    u_roles = []
+    timeout_role = discord.utils.get(message.server.roles,
+                                     name="Timeout")
+    for role in user.roles:
+        u_roles.append(role)
+
+    timeout_list[user] = u_roles
+    yield from client.remove_roles(user, *u_roles)
+    yield from client.add_roles(user, timeout_role)
+
+
+@asyncio.coroutine
+def end_timeout(message):
+    timeout_role = discord.utils.get(message.server.roles,
+                                     name="Timeout")
+    user = discord.utils.get(message.server.members,
+                             name=message.content[7:].lstrip())
+    if user is None:
+        user = discord.utils.get(message.server.members,
+                                 display_name=message.content[7:].lstrip())
+    yield from client.remove_roles(user, timeout_role)
+    yield from client.add_roles(user, *timeout_list[user])
+
 """# kick command
 async def kick_user(message):
     content = message.content[5:].strip()
@@ -500,6 +531,24 @@ def on_message(message):
                 yield from client.send_message(message.channel,
                                                "You don't have permission to "
                                                "request chatlogs.")
+    elif content.startswith('!timeout'):
+        allowed = False
+        for r in message.author.roles:
+            if r.name in privileged_roles:
+                allowed = True
+        if allowed:
+            yield from timeout_user(message)
+        else:
+            yield from client.send_message(message.channel, "Not allowed")
+
+
+    elif content.startswith('!timein'):
+        allowed = False
+        for r in message.author.roles:
+            if r.name in privileged_roles:
+                allowed = True
+        if allowed:
+            yield from end_timeout(message)
 
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)

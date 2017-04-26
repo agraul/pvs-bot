@@ -295,11 +295,21 @@ def cleanMessage(message):
 timeout_list = {}
 @asyncio.coroutine
 def timeout_user(message):
-    user = discord.utils.get(message.server.members,
-                             name=message.content[8:].lstrip())
-    if user is None:
+    message_content = message.content[8:].lstrip()
+    if '#' in message_content:
+        message_contents = message_content.split('#')
         user = discord.utils.get(message.server.members,
-                                 display_name=message.content[8:].lstrip())
+                                 name=message_contents[0],
+                                 discriminator=message_contents[1])
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                 display_name=message_contents[0],
+                                 discriminator=message_contents[1])
+    else:
+        user = discord.utils.get(message.server.members, name=message_content)
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                     display_name=message_content)
     u_roles = []
     timeout_role = discord.utils.get(message.server.roles,
                                      name="Timeout")
@@ -318,11 +328,20 @@ def end_timeout(message):
     modchat = discord.utils.get(message.server.channels, name="modchat")
     timeout_role = discord.utils.get(message.server.roles,
                                      name="Timeout")
-    user = discord.utils.get(message.server.members,
-                             name=message.content[7:].lstrip())
-    if user is None:
+    if '#' in message_content:
+        message_contents = message_content.split('#')
         user = discord.utils.get(message.server.members,
-                                 display_name=message.content[7:].lstrip())
+                                 name=message_contents[0],
+                                 discriminator=message_contents[1])
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                 display_name=message_contents[0],
+                                 discriminator=message_contents[1])
+    else:
+        user = discord.utils.get(message.server.members, name=message_content)
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                     display_name=message_content)
     yield from client.replace_roles(user, *timeout_list[user])
     yield from client.send_message(modchat, "{} is no longer timed out ({})."
                                    .format(user, message.author))

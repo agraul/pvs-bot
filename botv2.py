@@ -289,7 +289,7 @@ async def pastbin(title, content):
                                       'utf-8')).read()
 @asyncio.coroutine
 def cleanMessage(message):
-    time.sleep(3)
+    time.sleep(7)
     yield from client.delete_message(message)
 
 timeout_list = {}

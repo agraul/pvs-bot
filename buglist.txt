@@ -4,3 +4,4 @@
 #004 - timeout multiple at once
 *005 - time.sleep to asyncio.sleep
 #006 - riot api endpoint update
+#007 - use aiohttp instead of requests

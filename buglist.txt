@@ -2,3 +2,5 @@
 *002 - !timeout spams chat with 'Not allowed'
 *003 - name#id not working for !timeout
 #004 - timeout multiple at once
+*005 - time.sleep to asyncio.sleep
+#006 - riot api endpoint update

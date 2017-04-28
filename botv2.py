@@ -12,29 +12,29 @@ client = discord.Client()
 
 # Rank Getter for verify()
 URL = {
-    'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
-    'summoner_by_name': 'v{version}/summoner/by-name/{names}',
+    'base': 'https://{proxy}.api.riotgames.com/lol/{region}/{url}',
+    'summoner_by_name': 'v{version}/summoners/by-name/{names}',
     'get_league': 'v{version}/league/by-summoner/{id}/entry',
-    'get_runes': 'v{version}/summoner/{id}/runes'
+    'get_runes': 'v{version}/runes/by-summoner/{id}'
 }
-
 API_VERSIONS = {
-    'summoner_by_name': '1.4',
+    'summoner_by_name': '3',
     'get_league': '2.5',
-    'get_runes': '1.4'
+    'get_runes': '3'
 }
-RL = {
-    'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
-    'summoner_by_name': 'v{version}/summoner/by-name/{names}',
-    'get_league': 'v{version}/league/by-summoner/{id}/entry',
-    'get_runes': 'v{version}/summoner/{id}/runes'
-}
-
-API_VERSIONS = {
-    'summoner_by_name': '1.4',
-    'get_league': '2.5',
-    'get_runes': '1.4'
-}
+PROXY = {
+    'BR': 'BR1',
+    'EUNE': 'EUN1',
+    'EUW': 'EUW1',
+    'JP': 'JP1',
+    'KR': 'KR',
+    'LAN': 'LA1',
+    'LAS': 'LA2',
+    'NA': 'NA1',
+    'OCE': 'OC1',
+    'TR': 'TR1',
+    'RU': 'RU'
+    }
 
 
 class RankGetter(object):
@@ -46,8 +46,9 @@ class RankGetter(object):
         for key, value in params.items():
             if key not in args:
                 args[key] = value
+
         destination = URL['base'].format(
-            proxy=region,
+            proxy=PROXY[region.upper()],
             region=region,
             url=api_url
         )
@@ -120,43 +121,43 @@ ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
 
 @asyncio.coroutine
 def verify(message):  # check elo and assign role
-    try:
-        author = message.author
-        content = message.content[8:].split(',')
-        rank = rg.verify_rank(content[0], content[1].lower().strip(" "))
 
-        region = discord.utils.get(message.server.roles,
-                                   name=content[1].upper().strip(" "))
-        roles = author.roles
-        # if rank == "Masters" or rank == "Challenger" or rank == "Diamond":
-        #    rank2 = discord.utils.get(message.server.roles, name='Diamond +')
-        if rank == "Error":
-            yield from client.send_message(message.channel, "To verify rank, "
-                                      "please set the name of your first "
-                                      "rune page to 'summonersplaza'.")
-        elif rank == "Unranked":
-            yield from client.send_message(message.channel,
-                                           "You are not ranked in "
-                                           "dynamic queue.")
+    author = message.author
+    content = message.content[8:].split(',')
+    rank = rg.verify_rank(content[0], content[1].lower().strip(" "))
 
-        else:
-            if rank.lower() == "diamond" or rank.lower == "masters" or rank.lower == "challenger":
-                rank = "Diamond +"
-            rank2 = discord.utils.get(message.server.roles, name=rank)
-            roleList = [discord.utils.get(message.server.roles,
-                        name='Verified'), rank2, region]
-            for r in message.author.roles:
-                if r.name not in ranks:
-                    roleList.append(discord.utils.get(message.server.roles,
-                                                      name=r.name))
-            yield from client.replace_roles(author, *roleList)
-            yield from client.send_message(message.channel,
-                                           "You have been added to {}".format(
-                                               rank2))
-    except:
-        yield from client.send_message(message.channel, "Invalid format."
-                                       "Correct syntax is `!verify "
-                                       "summoner,region`")
+    region = discord.utils.get(message.server.roles,
+                                name=content[1].upper().strip(" "))
+    roles = author.roles
+    # if rank == "Masters" or rank == "Challenger" or rank == "Diamond":
+    #    rank2 = discord.utils.get(message.server.roles, name='Diamond +')
+    if rank == "Error":
+        yield from client.send_message(message.channel, "To verify rank, "
+                                    "please set the name of your first "
+                                    "rune page to 'summonersplaza'.")
+    elif rank == "Unranked":
+        yield from client.send_message(message.channel,
+                                        "You are not ranked in "
+                                        "dynamic queue.")
+
+    else:
+        if rank.lower() == "diamond" or rank.lower == "masters" or rank.lower == "challenger":
+            rank = "Diamond +"
+        rank2 = discord.utils.get(message.server.roles, name=rank)
+        roleList = [discord.utils.get(message.server.roles,
+                    name='Verified'), rank2, region]
+        for r in message.author.roles:
+            if r.name not in ranks:
+                roleList.append(discord.utils.get(message.server.roles,
+                                                    name=r.name))
+        yield from client.replace_roles(author, *roleList)
+        yield from client.send_message(message.channel,
+                                        "You have been added to {}".format(
+                                            rank2))
+    #except:
+    #    yield from client.send_message(message.channel, "Invalid #format."
+     #                                  "Correct syntax is `!#verify "
+      #                                 "summoner,region`")
 
 
 # lists of roles to check against
@@ -289,7 +290,7 @@ async def pastbin(title, content):
                                       'utf-8')).read()
 @asyncio.coroutine
 def cleanMessage(message):
-    time.sleep(7)
+    yield from asyncio.sleep(7)
     yield from client.delete_message(message)
 
 timeout_list = {}
@@ -574,4 +575,4 @@ def on_message(message):
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)
 
-client.run(id.token1())
+client.run(id.token2())

@@ -517,7 +517,7 @@ def on_message(message):
             yield from timeout_user(message)
 
     elif content.startswith('!timein'):
-        if any(True for r.name in message.author.roles if r.name in privileged_roles):
+        if any(True for r in message.author.roles if r.name in privileged_roles):
             yield from end_timeout(message)
 
     if channel == roleAssignmentChannel:

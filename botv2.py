@@ -488,7 +488,7 @@ def on_message(message):
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`"
-                                      .format(*assignable_roles))
+                                      .format(*roles))
     elif content.lower().startswith('!verify'):
         yield from verify(message)
 
@@ -513,20 +513,14 @@ def on_message(message):
                                                "You don't have permission to "
                                                "request chatlogs.")
     elif content.startswith('!timeout'):
-        allowed = False
         for r in message.author.roles:
             if r.name in privileged_roles:
-                allowed = True
-        if allowed:
-            yield from timeout_user(message)
+                yield from timeout_user(message)
 
     elif content.startswith('!timein'):
-        allowed = False
         for r in message.author.roles:
             if r.name in privileged_roles:
-                allowed = True
-        if allowed:
-            yield from end_timeout(message)
+                yield from end_timeout(message)
 
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)

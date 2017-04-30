@@ -163,12 +163,13 @@ rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 async def role_add(message):
     author = message.author
     user_input = message.content[2:]
-    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
     verified_role = discord.utils.get(message.server.roles, name='Verified')
     coach_role = discord.utils.get(message.server.roles, name="Coach")
+    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
+    
+    role = assignable_roles.get(roleLower, "none")
 
-    if str(roleLow) != "none" and str(roleLow) in assignable_roles:
-        role = assignable_roles.get(roleLower)
+    if str(role) != "none":
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
@@ -184,31 +185,17 @@ async def role_add(message):
 async def role_strip(message):
     author = message.author
     user_input = message.content[2:]
-    role = discord.utils.get(message.server.roles, name=user_input)
     roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTit = discord.utils.get(message.server.roles, name=user_input.title())
+    
+    role = assignable_roles(roleLow, "none")
 
-    if str(role) != "None":
+    if str(role) != "none":
         await client.remove_roles(author, role)
         await client.send_message(message.channel, "You have been removed from"
                                   " {}".format(role))
-    elif str(roleLow) != "None":
-        await client.remove_roles(author, roleLow)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleLow))
-    elif str(roleUpp) != "None":
-        await client.remove_roles(author, roleUpp)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleUpp))
-    elif str(roleTit) != "None":
-        await client.remove_roles(author, roleTit)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleTit))
     else:
         await client.send_message(message.channel,
                                   "Please enter a valid role.")
-
 
 # function to format and filter log in #chatlog and return a string
 async def savelogs(message):

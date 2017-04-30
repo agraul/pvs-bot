@@ -513,14 +513,12 @@ def on_message(message):
                                                "You don't have permission to "
                                                "request chatlogs.")
     elif content.startswith('!timeout'):
-        for r in message.author.roles:
-            if r.name in privileged_roles:
-                yield from timeout_user(message)
+        if any(True for r in message.author.roles if r.name in privileged_roles):
+            yield from timeout_user(message)
 
     elif content.startswith('!timein'):
-        for r in message.author.roles:
-            if r.name in privileged_roles:
-                yield from end_timeout(message)
+        if any(True for r.name in message.author.roles if r.name in privileged_roles):
+            yield from end_timeout(message)
 
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)

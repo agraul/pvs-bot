@@ -496,12 +496,8 @@ def on_message(message):
 
     elif content.startswith('??roles') and channel == roleAssignmentChannel:
             yield from client.send_message(channel,
-                                      "Roles you can use me for: "
-                                      "`{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
-                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
-                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
-                                      " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`"
-                                      .format(*roles))
+                                      "Roles you can use me for: " +
+                                      ("`{}` " * len(roles)).format(*roles))
     elif content.lower().startswith('!verify'):
         yield from verify(message)
 

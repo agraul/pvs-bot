@@ -23,19 +23,6 @@ API_VERSIONS = {
     'get_league': '2.5',
     'get_runes': '1.4'
 }
-RL = {
-    'base': 'https://{proxy}.api.pvp.net/api/lol/{region}/{url}',
-    'summoner_by_name': 'v{version}/summoner/by-name/{names}',
-    'get_league': 'v{version}/league/by-summoner/{id}/entry',
-    'get_runes': 'v{version}/summoner/{id}/runes'
-}
-
-API_VERSIONS = {
-    'summoner_by_name': '1.4',
-    'get_league': '2.5',
-    'get_runes': '1.4'
-}
-
 
 class RankGetter(object):
     def __init__(self, api_key):
@@ -160,10 +147,13 @@ def verify(message):  # check elo and assign role
 
 
 # lists of roles to check against
-assignable_roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CN',
-                    'KR', 'TR', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
-                    'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
-                    'Diamond +', 'Coach', 'NLFG', 'Tournament', 'NPVS']
+roles = ['NA', 'EUW', 'EUNE', 'OCE', 'BR', 'LAN', 'LAS', 'CN',
+         'KR', 'TR', 'GARENA', 'Top', 'Mid', 'Jungle', 'ADC',
+         'Support', 'Bronze', 'Silver', 'Gold', 'Platinum',
+         'Diamond +', 'Coach', 'NLFG', 'Tournament', 'NPVS']
+
+assignable_roles = dict((role.lower(), role) for role in roles)
+
 privileged_roles = ['admin', 'Moderator']
 rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 
@@ -173,36 +163,17 @@ rank_roles = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond +']
 async def role_add(message):
     author = message.author
     user_input = message.content[2:]
-    role = discord.utils.get(message.server.roles, name=user_input)
-    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTit = discord.utils.get(message.server.roles, name=user_input.title())
     verified_role = discord.utils.get(message.server.roles, name='Verified')
     coach_role = discord.utils.get(message.server.roles, name="Coach")
+    roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
+    
+    role = assignable_roles.get(roleLower, "none")
 
-    if str(role) != "None" and str(role) in assignable_roles:
+    if str(role) != "none":
         await client.add_roles(author, role)
         await client.send_message(message.channel, "You have been added to {}"
                                   .format(role))
         if str(role) in rank_roles:
-                await client.remove_roles(author, verified_role, coach_role)
-    elif str(roleLow) != "None" and str(roleLow) in assignable_roles:
-        await client.add_roles(author, roleLow)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleLow))
-        if str(roleLow) in rank_roles:
-                await client.remove_roles(author, verified_role, coach_role)
-    elif str(roleUpp) != "None" and str(roleUpp) in assignable_roles:
-        await client.add_roles(author, roleUpp)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleUpp))
-        if str(roleUpp) in rank_roles:
-                await client.remove_roles(author, verified_role, coach_role)
-    elif str(roleTit) != "None" and str(roleTit) in assignable_roles:
-        await client.add_roles(author, roleTit)
-        await client.send_message(message.channel, "You have been added to {}"
-                                  .format(roleTit))
-        if str(roleTit) in rank_roles:
                 await client.remove_roles(author, verified_role, coach_role)
     else:
         await client.send_message(message.channel,
@@ -214,31 +185,17 @@ async def role_add(message):
 async def role_strip(message):
     author = message.author
     user_input = message.content[2:]
-    role = discord.utils.get(message.server.roles, name=user_input)
     roleLow = discord.utils.get(message.server.roles, name=user_input.lower())
-    roleUpp = discord.utils.get(message.server.roles, name=user_input.upper())
-    roleTit = discord.utils.get(message.server.roles, name=user_input.title())
+    
+    role = assignable_roles(roleLow, "none")
 
-    if str(role) != "None":
+    if str(role) != "none":
         await client.remove_roles(author, role)
         await client.send_message(message.channel, "You have been removed from"
                                   " {}".format(role))
-    elif str(roleLow) != "None":
-        await client.remove_roles(author, roleLow)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleLow))
-    elif str(roleUpp) != "None":
-        await client.remove_roles(author, roleUpp)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleUpp))
-    elif str(roleTit) != "None":
-        await client.remove_roles(author, roleTit)
-        await client.send_message(message.channel, "You have been removed from"
-                                  " {}".format(roleTit))
     else:
         await client.send_message(message.channel,
                                   "Please enter a valid role.")
-
 
 # function to format and filter log in #chatlog and return a string
 async def savelogs(message):
@@ -531,7 +488,7 @@ def on_message(message):
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`,"
                                       " `{}`, `{}`, `{}`, `{}`, `{}`, `{}`"
-                                      .format(*assignable_roles))
+                                      .format(*roles))
     elif content.lower().startswith('!verify'):
         yield from verify(message)
 
@@ -556,19 +513,11 @@ def on_message(message):
                                                "You don't have permission to "
                                                "request chatlogs.")
     elif content.startswith('!timeout'):
-        allowed = False
-        for r in message.author.roles:
-            if r.name in privileged_roles:
-                allowed = True
-        if allowed:
+        if any(True for r in message.author.roles if r.name in privileged_roles):
             yield from timeout_user(message)
 
     elif content.startswith('!timein'):
-        allowed = False
-        for r in message.author.roles:
-            if r.name in privileged_roles:
-                allowed = True
-        if allowed:
+        if any(True for r in message.author.roles if r.name in privileged_roles):
             yield from end_timeout(message)
 
     if channel == roleAssignmentChannel:

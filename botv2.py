@@ -140,7 +140,8 @@ def verify(message):  # check elo and assign role
                                            "dynamic queue.")
 
         else:
-            if rank.lower() == "diamond" or rank.lower == "masters" or rank.lower == "challenger":
+            if rank.lower() == "diamond" or rank.lower() == "master" or \
+                    rank.lower() == "challenger":
                 rank = "Diamond +"
             rank2 = discord.utils.get(message.server.roles, name=rank)
             roleList = [discord.utils.get(message.server.roles,

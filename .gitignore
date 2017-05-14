@@ -97,3 +97,4 @@ pvs-bot-log.png
 timeout.py
 pastebin.py
 discord_env/
+credentials.py

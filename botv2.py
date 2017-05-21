@@ -5,8 +5,7 @@ import requests
 import datetime
 import urllib.parse
 import urllib.request
-import time
-import id
+import credentials
 
 client = discord.Client()
 
@@ -114,7 +113,7 @@ class RankGetter(object):
             return "Error"
 
 
-rg = RankGetter('070e0d5e-c950-47f5-8a6c-fb3a5861f70c')
+rg = RankGetter(credentials.riot_api_key())
 ranks = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Masters",
          "Challenger"]
 
@@ -532,4 +531,4 @@ def on_message(message):
     if channel == roleAssignmentChannel:
         yield from cleanMessage(message)
 
-client.run(id.token2())
+client.run(credentials.token2())

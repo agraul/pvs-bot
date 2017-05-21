@@ -90,6 +90,7 @@ ENV/
 
 # bot id
 id.py
+credentials.py
 
 # pgn of log
 pvs-bot-log.png
@@ -97,3 +98,5 @@ pvs-bot-log.png
 timeout.py
 pastebin.py
 discord_env/
+
+.idea/

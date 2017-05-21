@@ -1,6 +1,7 @@
 # Role Management functions
 import discord
 import datetime
+from riot_api_playground import rank_getter as rg
 
 utcnow = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -153,4 +154,27 @@ async def reduce_roles(client, message, bot_log):
                               .format(utcnow, message.author, user)
                               + ("`{}` " * len(roles_to_keep))
                               .format(*roles_to_keep))
+
+
+async def verify_rank(client, message ,bot_log):
+
+    message_contents = message.content[6:].lstrip().split(',')
+    summoner = rg.get_summoner_by_name(message_contents[0],
+                                       message_contents[1])
+    summoner_id = summoner['id']
+    summoner_rank = rg.get_rank(summoner_id, message_contents[1])
+    summoner_first_rune_pg = rg.get_runes(
+summoner_id, message_contents[1])['pages'][0]['name']
+    if summoner_first_rune_pg == 'summonersplaza':
+        user = message.author
+        rank_role = await check_role_in_server(message, summoner_rank)
+        verify_role = await check_role_in_server(message, 'verify')
+        region_role = await check_role_in_server(message, message_contents[1])
+        await client.add_roles(user, rank_role)
+        await client.add_roles(user,verify_role)
+        await client.add_roles(user, region_role)
+        await client.send_message(
+            message.channel, "Success! You have been verified ({} on {}").\
+            format(rank_role, region_role)
+
 

@@ -25,7 +25,9 @@ PROXY = {
     'RU': 'RU'
 }
 
-class rank_info:
+
+class RankInfo:
+
     def __init__(self, api_key):
         self.api_key = api_key
 
@@ -37,7 +39,8 @@ class rank_info:
                 args[k] = v
 
         # destination URL from base with correct proxy + specific api url
-        dest = URL['base'].format(proxy=PROXY[region_id.upper()], api_url=api_url)
+        dest = URL['base'].format(proxy=PROXY[region_id.upper()],
+                                  api_url=api_url)
 
         # get response from requests
         response = requests.get(dest, params=args)
@@ -49,10 +52,9 @@ class rank_info:
         api_url = URL['summoner_by_name'].format(name=name)
         return self.api_request(api_url, region)
 
-
-    # from summoner id, get rank
+    # get rank from summoner id
     def get_rank(self, id, region):
-        # pass summoner id via api_url to api_reuqest
+        # pass summoner id via api_url to api_request
         api_url = URL['get_league'].format(summoner_id=id)
         league = self.api_request(api_url, region.rstrip())
         if len(league) == 0:
@@ -61,16 +63,22 @@ class rank_info:
             tier = league['tier']
             return tier.title()
 
+    # get all runes from summoner id
+    def get_all_runes(self, id, region):
+        # pass summoner id via api_url to api_request
+        api_url = URL['get_runes'].format(summoner_id=id)
+        return self.api_request(api_url, region)
 
 
-rank_getter = rank_info(developer_key)
-
-name,region = input("Please insert name,region: ").split(',')
-summoner = rank_getter.get_summoner_by_name(name, region)
-id = summoner['id']
-rank = rank_getter.get_rank(id, region)
-print(id)
-print(rank)
+rank_getter = RankInfo(developer_key)
+summ_name, summ_region = input("Please insert name,region: ").split(',')
 
 
+def verify(summ_name, summ_region):
+    summoner = rank_getter.get_summoner_by_name(summ_name, summ_region)
+    summ_id = summoner['id']
+    summ_rank = rank_getter.get_rank(summ_id, summ_region)
+    summ_first_rune_name = rank_getter.get_all_runes(summ_id, summ_region)['pages'][0]['name']
+    
 
+verify(summ_name, summ_region)

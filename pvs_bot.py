@@ -5,6 +5,7 @@ import discord
 
 from credentials import token
 import RoleManagement
+import AdminTools
 
 # logging (copied from discord.py documentation)
 logger = logging.getLogger('discord')

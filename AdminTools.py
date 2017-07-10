@@ -23,14 +23,15 @@ utcnow = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 # TODO: check_rights
 async def check_permissions(client, level, user, bot_log):
     if level == 'high':
-        required_roles = []
-        required_roles.append(discord.utils.get(client.server.roles,
-                                               name='admin'))
+        required_roles = ['admin']
     elif level == 'medium':
-        required_roles = []
-        required_roles.append(discord.utils.get(client.server.roles,
-                                               name='admin'))
-        required_roles.append(discord.utils.get(client.server.roles,
-                                               name='moderator'))
-    elif level == 'low':
-        required_roles = user.roles
+        required_roles = ['admin', 'moderator']
+
+    if len(required_roles) > 0:
+        for role in required_roles:
+            d_role = discord.utils.get(client.server.roles, name=role)
+            if d_role in user.roles:
+                return True
+        return False
+    return True
+

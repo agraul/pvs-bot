@@ -31,7 +31,7 @@ async def check_role_in_server(message, role):
 async def assign_role(client, message, assignable_roles, bot_log):
     """
     Assign a role to a user.
-    
+
     :param client: bot instance of discord.Client()
     :param message: Trigger message: '+!role' or '+!role user'
     :param assignable_roles: list of allowed roles
@@ -85,7 +85,7 @@ async def assign_role(client, message, assignable_roles, bot_log):
 async def remove_role(client, message, bot_log):
     """
     Remove a role from user.
-    
+
     :param client: bot instance of discord.Client()
     :param message: Trigger message: '-!role'
     :param bot_log: channel bot is logging to
@@ -116,8 +116,8 @@ async def remove_role(client, message, bot_log):
 async def reduce_roles(client, message, bot_log):
     """
     Remove all (but explicitly stated) roles from another user.
-    
-    :param client: bot instance of discord.Client() 
+
+    :param client: bot instance of discord.Client()
     :param message: Trigger message: '!reduce user role1 role2 [...]'
     :param bot_log: channel bot is logging to
     """
@@ -174,7 +174,37 @@ summoner_id, message_contents[1])['pages'][0]['name']
         await client.add_roles(user,verify_role)
         await client.add_roles(user, region_role)
         await client.send_message(
-            message.channel, "Success! You have been verified ({} on {}").\
-            format(rank_role, region_role)
+            message.channel, "Success! You have been verified ({} on {})".\
+            format(rank_role, region_role))
 
+
+async def timeout_user(client, message, timeout_list, bot_log):
+    message_content = message.content[8:].lstrip()
+    targets = []
+    if len(message.mentions) > 0:
+        for mention in message.mentions:
+            targets.append(mention)
+    #TODO use regex to parse message targets
+    elif '#' in message_content:
+        message_content_l = message_content.split('#')
+        user = discord.utils.get(message.server.members,
+                                 name=message_content_l[0],
+                                 discriminator=message_content_l[1])
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                 display_name=message_content_l[0],
+                                 discriminator=message_content_l[1])
+        targets.append(user)
+    else:
+        user = discord.utils.get(message.server.members,
+                                 name=message_content)
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                     display_name=message_content)
+    timeout_role = discord.utils.get(message.server.roles, name='Timeout')
+    for t in targets:
+        t_roles = []
+        for role in t.roles:
+            t_roles.append(role)
+        timeout_list[t] = t_roles
 

@@ -1,9 +1,6 @@
 # Role Management functions
 import discord
-import datetime
 from riot_api_playground import rank_getter as rg
-
-utcnow = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
@@ -28,7 +25,7 @@ async def check_role_in_server(message, role):
         discord_role = None
     return discord_role
 
-async def assign_role(client, message, assignable_roles, bot_log):
+async def assign_role(client, message, assignable_roles, bot_log, utcnow):
     """
     Assign a role to a user.
 
@@ -37,6 +34,10 @@ async def assign_role(client, message, assignable_roles, bot_log):
     :param assignable_roles: list of allowed roles
     :param bot_log: channel bot is logging to
     """
+
+    assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
+                        'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
+                        'NLFG']
 
     # strip trigger and split content
     message_contents = message.content[2:].lstrip().split(' ')
@@ -82,7 +83,7 @@ async def assign_role(client, message, assignable_roles, bot_log):
                                           .format(utcnow, user, role))
         # TODO: cleanup afterwards
 
-async def remove_role(client, message, bot_log):
+async def remove_role(client, message, bot_log, utcnow):
     """
     Remove a role from user.
 
@@ -113,7 +114,7 @@ async def remove_role(client, message, bot_log):
 
 # TODO: strip roles (strip all roles except for those explicitly stated)
 # TODO: restrict usage to admins
-async def reduce_roles(client, message, bot_log):
+async def reduce_roles(client, message, bot_log, utcnow):
     """
     Remove all (but explicitly stated) roles from another user.
 
@@ -149,14 +150,14 @@ async def reduce_roles(client, message, bot_log):
                 roles_to_keep.append(str(user_role))
             else:
                 roles_to_remove.append(user_role)
-    # await client.remove_roles(user, *roles_to_remove)
+    await client.remove_roles(user, *roles_to_remove)
     await client.send_message(bot_log, "`{}`: {} Reduced {}'s roles to "
                               .format(utcnow, message.author, user)
                               + ("`{}` " * len(roles_to_keep))
                               .format(*roles_to_keep))
 
 
-async def verify_rank(client, message ,bot_log):
+async def verify_rank(client, message ,bot_log, utcnow):
 
     message_contents = message.content[6:].lstrip().split(',')
     summoner = rg.get_summoner_by_name(message_contents[0],
@@ -178,9 +179,11 @@ summoner_id, message_contents[1])['pages'][0]['name']
             format(rank_role, region_role))
 
 
-async def timeout_user(client, message, timeout_list, bot_log):
+async def timeout_user(client, message, timeout_list, bot_log, utcnow):
+
     message_content = message.content[8:].lstrip()
     targets = []
+
     if len(message.mentions) > 0:
         for mention in message.mentions:
             targets.append(mention)
@@ -201,6 +204,7 @@ async def timeout_user(client, message, timeout_list, bot_log):
         if user is None:
             user = discord.utils.get(message.server.members,
                                      display_name=message_content)
+
     timeout_role = discord.utils.get(message.server.roles, name='Timeout')
     for t in targets:
         t_roles = []

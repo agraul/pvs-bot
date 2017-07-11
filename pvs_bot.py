@@ -20,9 +20,6 @@ logger.addHandler(handler)
 # client instance
 client = discord.Client()
 
-# global variables
-assignable_roles = ['Gold', 'EUW']
-
 
 @client.event
 async def on_ready():
@@ -36,12 +33,8 @@ async def on_ready():
 @client.event
 async def on_message(message):
     bot_log = client.get_channel('302353252698161153')
-    if message.content.startswith('+!'):
-        await RoleManagement.assign_role(client, message, assignable_roles,
-                                         bot_log)
-    elif message.content.startswith('-!'):
-        await RoleManagement.remove_role(client, message, bot_log)
-    elif message.content.startswith('!reduce'):
-        await RoleManagement.reduce_roles(client, message, bot_log)
+    utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
+    if message.content[0] == '!':
+        await AdminTools.run_op(client, message, bot_log, utc)
 client.run(token())

@@ -1,8 +1,7 @@
 # Library for admin functions
 import discord
-import datetime
+import RoleManagement
 
-utcnow = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
 # TODO: kick
 
@@ -21,17 +20,33 @@ utcnow = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 # TODO: change_settings
 
 # TODO: check_rights
-async def check_permissions(client, level, user, bot_log):
-    if level == 'high':
-        required_roles = ['admin']
-    elif level == 'medium':
-        required_roles = ['admin', 'moderator']
+async def run_op(client, message, bot_log, utc):
+    levels = {'high': ['admin'],
+              'medium': ['moderator', 'admin']
+              'low': ['everyone']
+             }
 
-    if len(required_roles) > 0:
-        for role in required_roles:
-            d_role = discord.utils.get(client.server.roles, name=role)
-            if d_role in user.roles:
-                return True
-        return False
-    return True
+    ops = {'+': [RoleManagement.assign_role, 'low'],
+           '-': [RoleManagement.remove_role, 'low'],
+           'reduce': [RoleManagement.reduce_roles, 'high'],
+           'timeout': [RoleManagement.timeout_user, 'medium'],
+          }
+    operation = message.content[1:]
+    if ops.has_key(operation):
+        op = ops[operation]
+    else:
+        await client.send_message(message.channel,
+                                  "Operation `{}` not found".format(operation))
+        return None
+
+    SUCCESS = False
+    for r in message.author.roles:
+        if r in levels[op[1]]:
+            op[0](client, message, bot_log, utcnow)
+            SUCCESS = True
+            break
+    if SUCCESS is not True:
+        client.send_message(message.channel,
+                            "Failed running `{}`".format(operation)
+    return None
 

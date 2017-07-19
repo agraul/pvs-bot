@@ -1,6 +1,7 @@
 # Role Management functions
 import discord
-from riot_api_playground import rank_getter as rg
+from riot_api_playground import RankInfo
+from credentials import riot_api_key
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
@@ -25,7 +26,7 @@ async def check_role_in_server(message, role):
         discord_role = None
     return discord_role
 
-async def assign_role(client, message, assignable_roles, bot_log, utcnow):
+async def assign_role(client, message, bot_log, utcnow):
     """
     Assign a role to a user.
 
@@ -57,6 +58,7 @@ async def assign_role(client, message, assignable_roles, bot_log, utcnow):
                                          display_name=message_contents[1])
         except IndexError:
             user = message.author
+        print(user)
 
         discord_role = await check_role_in_server(message, role)
 
@@ -159,6 +161,7 @@ async def reduce_roles(client, message, bot_log, utcnow):
 
 async def verify_rank(client, message ,bot_log, utcnow):
 
+    rg = RankInfo(riot_api_key)
     message_contents = message.content[6:].lstrip().split(',')
     summoner = rg.get_summoner_by_name(message_contents[0],
                                        message_contents[1])

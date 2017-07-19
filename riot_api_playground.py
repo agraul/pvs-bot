@@ -70,15 +70,18 @@ class RankInfo:
         return self.api_request(api_url, region)
 
 
-rank_getter = RankInfo(developer_key)
-summ_name, summ_region = input("Please insert name,region: ").split(',')
+def main():
+    rank_getter = RankInfo(developer_key)
+    summ_name, summ_region = input("Please insert name,region: ").split(',')
 
 
-def verify(summ_name, summ_region):
-    summoner = rank_getter.get_summoner_by_name(summ_name, summ_region)
-    summ_id = summoner['id']
-    summ_rank = rank_getter.get_rank(summ_id, summ_region)
-    summ_first_rune_name = rank_getter.get_runes(summ_id, summ_region)['pages'][0]['name']
-    
+    def verify(summ_name, summ_region):
+        summoner = rank_getter.get_summoner_by_name(summ_name, summ_region)
+        summ_id = summoner['id']
+        summ_rank = rank_getter.get_rank(summ_id, summ_region)
+        summ_first_rune_name = rank_getter.get_runes(summ_id, summ_region)['pages'][0]['name']
 
-verify(summ_name, summ_region)
+
+    verify(summ_name, summ_region)
+if __name__ == '__main__':
+    main()

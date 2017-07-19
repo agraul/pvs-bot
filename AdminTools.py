@@ -22,8 +22,8 @@ import RoleManagement
 # TODO: check_rights
 async def run_op(client, message, bot_log, utc):
     levels = {'high': ['admin'],
-              'medium': ['moderator', 'admin']
-              'low': ['everyone']
+              'medium': ['moderator', 'admin'],
+              'low': ['@everyone']
              }
 
     ops = {'+': [RoleManagement.assign_role, 'low'],
@@ -31,8 +31,8 @@ async def run_op(client, message, bot_log, utc):
            'reduce': [RoleManagement.reduce_roles, 'high'],
            'timeout': [RoleManagement.timeout_user, 'medium'],
           }
-    operation = message.content[1:]
-    if ops.has_key(operation):
+    operation, _ = message.content[1:].split(maxsplit=1)
+    if operation in ops.keys():
         op = ops[operation]
     else:
         await client.send_message(message.channel,
@@ -40,13 +40,12 @@ async def run_op(client, message, bot_log, utc):
         return None
 
     SUCCESS = False
+    required_roles = levels[op[1]]
     for r in message.author.roles:
-        if r in levels[op[1]]:
-            op[0](client, message, bot_log, utcnow)
+        if r.name in required_roles:
+            await op[0](client, message, bot_log, utc)
             SUCCESS = True
             break
     if SUCCESS is not True:
         client.send_message(message.channel,
-                            "Failed running `{}`".format(operation)
-    return None
-
+                            "Failed running `{}`".format(operation))

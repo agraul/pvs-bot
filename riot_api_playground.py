@@ -60,7 +60,7 @@ class RankInfo:
         if len(league) == 0:
             return "Unranked"
         else:
-            tier = league['tier']
+            tier = league[0]['tier']
             return tier.title()
 
     # get all runes from summoner id

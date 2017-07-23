@@ -30,6 +30,7 @@ async def run_op(client, message, bot_log, utc):
            '-': [RoleManagement.remove_role, 'low'],
            'reduce': [RoleManagement.reduce_roles, 'high'],
            'timeout': [RoleManagement.timeout_user, 'medium'],
+           'verify': [RoleManagement.verify_rank, 'low'],
           }
     operation, _ = message.content[1:].split(maxsplit=1)
     if operation in ops.keys():

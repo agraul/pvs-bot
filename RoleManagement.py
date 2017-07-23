@@ -159,24 +159,33 @@ async def reduce_roles(client, message, bot_log, utcnow):
                               .format(*roles_to_keep))
 
 
-async def verify_rank(client, message ,bot_log, utcnow):
+async def verify_rank(client, message, bot_log, utcnow):
 
-    rg = RankInfo(riot_api_key)
-    message_contents = message.content[6:].lstrip().split(',')
+    tier_roles = ['diamond +', 'platinum', 'gold', 'silver', 'bronze']
+    rg = RankInfo(riot_api_key())
+    message_contents = message.content[7:].lstrip().split(',')
     summoner = rg.get_summoner_by_name(message_contents[0],
                                        message_contents[1])
     summoner_id = summoner['id']
     summoner_rank = rg.get_rank(summoner_id, message_contents[1])
+    print(summoner_rank)
     summoner_first_rune_pg = rg.get_runes(
-summoner_id, message_contents[1])['pages'][0]['name']
-    if summoner_first_rune_pg == 'summonersplaza':
+            summoner_id, message_contents[1])['pages'][0]['name']
+    print(summoner_first_rune_pg)
+    if summoner_first_rune_pg == 'Plats vs Silvers':
         user = message.author
         rank_role = await check_role_in_server(message, summoner_rank)
-        verify_role = await check_role_in_server(message, 'verify')
+        verify_role = await check_role_in_server(message, 'verified')
         region_role = await check_role_in_server(message, message_contents[1])
-        await client.add_roles(user, rank_role)
-        await client.add_roles(user,verify_role)
-        await client.add_roles(user, region_role)
+        kept_roles = []
+        for r in user.roles:
+            if r.name.lower() not in tier_roles:
+                kept_roles.append(r)
+
+        kept_roles.append(verify_role)
+        kept_roles.append(region_role)
+        kept_roles.append(rank_role)
+        await client.replace_roles(user, *kept_roles)
         await client.send_message(
             message.channel, "Success! You have been verified ({} on {})".\
             format(rank_role, region_role))

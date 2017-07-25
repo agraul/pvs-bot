@@ -19,7 +19,6 @@ import RoleManagement
 
 # TODO: change_settings
 
-# TODO: check_rights
 async def run_op(client, message, bot_log, utc):
     levels = {'high': ['admin'],
               'medium': ['moderator', 'admin'],

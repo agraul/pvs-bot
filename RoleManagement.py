@@ -5,6 +5,7 @@ from credentials import riot_api_key
 
 # GLOBAL VARIABLES
 timeout_list = {}
+tier_roles = ['diamond +', 'platinum', 'gold', 'silver', 'bronze']
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
@@ -64,16 +65,32 @@ async def assign_role(client, message, bot_log, utcnow):
                                          display_name=message_contents[1])
         except IndexError:
             user = message.author
-        print(user)
 
         discord_role = await check_role_in_server(message, role)
+        # check if discovered role is a tier role
+        tier_role = False
+        if discord_role.name.lower() in tier_roles:
+            tier_role = True
 
         # check if discovered role is allowed to be assigned
         try:
-            if discord_role.name in assignable_roles:
+            if discord_role.name in assignable_roles and tier_role is False:
                 await client.send_message(message.channel, "{} got added to {}"
                                           .format(user, discord_role))
                 await client.add_roles(user, discord_role)
+                await client.send_message(bot_log, "{} got added to {}"
+                                          .format(user, discord_role))
+            elif discord_role.name in assignable_roles and tier_role is True:
+                # check for previous rank roles and replace them
+                new_roles = []
+                for r in user.roles:
+                    if r.name.lower() not in tier_roles:
+                        new_roles.append(r)
+                new_roles.append(discord_role)
+                await client.replace_roles(user, *new_roles)
+
+                await client.send_message(message.channel, "{} got added to {}"
+                                          .format(user, discord_role))
                 await client.send_message(bot_log, "{} got added to {}"
                                           .format(user, discord_role))
             else:
@@ -168,17 +185,14 @@ async def reduce_roles(client, message, bot_log, utcnow):
 
 async def verify_rank(client, message, bot_log, utcnow):
 
-    tier_roles = ['diamond +', 'platinum', 'gold', 'silver', 'bronze']
     rg = RankInfo(riot_api_key())
     message_contents = message.content[7:].lstrip().split(',')
     summoner = rg.get_summoner_by_name(message_contents[0],
                                        message_contents[1])
     summoner_id = summoner['id']
     summoner_rank = rg.get_rank(summoner_id, message_contents[1])
-    print(summoner_rank)
     summoner_first_rune_pg = rg.get_runes(
             summoner_id, message_contents[1])['pages'][0]['name']
-    print(summoner_first_rune_pg)
     if summoner_first_rune_pg == 'Plats vs Silvers':
         user = message.author
         rank_role = await check_role_in_server(message, summoner_rank)

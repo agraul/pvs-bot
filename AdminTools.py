@@ -32,7 +32,13 @@ async def run_op(client, message, bot_log, utc):
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
           }
-    operation, _ = message.content[1:].split(maxsplit=1)
+    # unwrap message into operation and arguments
+    try:
+        operation, _ = message.content[1:].split(maxsplit=1)
+    except ValueError:
+        await client.send_message(message.channel, "I need more information")
+
+    # check if operation exists
     if operation in ops.keys():
         op = ops[operation]
     else:

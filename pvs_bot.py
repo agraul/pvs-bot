@@ -35,6 +35,9 @@ async def on_message(message):
     bot_log = client.get_channel('302353252698161153')
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
-    if message.content[0] == '!':
-        await AdminTools.run_op(client, message, bot_log, utc)
+    try:
+        if message.content[0] == '!':
+            await AdminTools.run_op(client, message, bot_log, utc)
+    except IndexError:
+         pass
 client.run(token())

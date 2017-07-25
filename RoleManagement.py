@@ -3,6 +3,9 @@ import discord
 from riot_api_playground import RankInfo
 from credentials import riot_api_key
 
+# GLOBAL VARIABLES
+timeout_list = {}
+
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
 
@@ -40,6 +43,9 @@ async def assign_role(client, message, bot_log, utcnow):
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
                         'NLFG']
 
+    if message.channel != discord.utils.get(message.server.channels,
+                                            name='role-assignment'):
+        return None
     # strip trigger and split content
     message_contents = message.content[2:].lstrip().split(' ')
 
@@ -93,6 +99,9 @@ async def remove_role(client, message, bot_log, utcnow):
     :param message: Trigger message: '-!role'
     :param bot_log: channel bot is logging to
     """
+    if message.channel != discord.utils.get(message.server.channels,
+                                            name='role-assignment'):
+        return None
     role = message.content[2:].strip()
     user = message.author
     # TODO: ask for confirmation for some roles
@@ -114,8 +123,6 @@ async def remove_role(client, message, bot_log, utcnow):
 
         # TODO: cleanup afterwards
 
-# TODO: strip roles (strip all roles except for those explicitly stated)
-# TODO: restrict usage to admins
 async def reduce_roles(client, message, bot_log, utcnow):
     """
     Remove all (but explicitly stated) roles from another user.
@@ -191,7 +198,7 @@ async def verify_rank(client, message, bot_log, utcnow):
             format(rank_role, region_role))
 
 
-async def timeout_user(client, message, timeout_list, bot_log, utcnow):
+async def timeout_user(client, message, bot_log, utcnow):
 
     message_content = message.content[8:].lstrip()
     targets = []
@@ -217,10 +224,47 @@ async def timeout_user(client, message, timeout_list, bot_log, utcnow):
             user = discord.utils.get(message.server.members,
                                      display_name=message_content)
 
+        targets.append(user)
     timeout_role = discord.utils.get(message.server.roles, name='Timeout')
     for t in targets:
         t_roles = []
         for role in t.roles:
             t_roles.append(role)
         timeout_list[t] = t_roles
+        await client.replace_roles(t, timeout_role)
+        await client.send_message(
+            message.channel, "{}: {} got timed out by {}".format(
+                utc, t, message.author))
 
+async def timein_user(client, message, bot_log, utc):
+
+    message_content = message.content[8:].lstrip()
+    targets = []
+
+    if len(message.mentions) > 0:
+        for mention in message.mentions:
+            targets.append(mention)
+    #TODO use regex to parse message targets
+    elif '#' in message_content:
+        message_content_l = message_content.split('#')
+        user = discord.utils.get(message.server.members,
+                                 name=message_content_l[0],
+                                 discriminator=message_content_l[1])
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                 display_name=message_content_l[0],
+                                 discriminator=message_content_l[1])
+        targets.append(user)
+    else:
+        user = discord.utils.get(message.server.members,
+                                 name=message_content)
+        if user is None:
+            user = discord.utils.get(message.server.members,
+                                     display_name=message_content)
+        targets.append(user)
+    for t in targets:
+        t_roles = timeout_list[t]
+        await client.replace_roles(t, *t_roles)
+        await client.send_message(
+            message.channel, "{}:{}'s timeout was ended by {}".format(
+                utc, t.name, message.author))

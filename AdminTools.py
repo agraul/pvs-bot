@@ -29,6 +29,7 @@ async def run_op(client, message, bot_log, utc):
     ops = {'+': [RoleManagement.assign_role, 'low'],
            '-': [RoleManagement.remove_role, 'low'],
            'reduce': [RoleManagement.reduce_roles, 'high'],
+           'timein': [RoleManagement.timein_user, 'medium'],
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
           }

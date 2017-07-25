@@ -1,6 +1,6 @@
 # Role Management functions
 import discord
-from riot_api_playground import RankInfo
+from riot_api import RankInfo
 from credentials import riot_api_key
 
 # GLOBAL VARIABLES

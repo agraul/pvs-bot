@@ -5,7 +5,7 @@ from credentials import riot_api_key
 
 # GLOBAL VARIABLES
 timeout_list = {}
-tier_roles = ['diamond +', 'platinum', 'gold', 'silver', 'bronze']
+tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import asyncio
 
 import discord
 
@@ -32,12 +33,20 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    # real server role_assignment = client.get_channel('292124021628338197')
+    role_assignment = client.get_channel('248569093651693568') # test
     bot_log = client.get_channel('302353252698161153')
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
 
     try:
         if message.content[0] == '!':
             await AdminTools.run_op(client, message, bot_log, utc)
     except IndexError:
          pass
+
+    if message.channel == role_assignment:
+        await asyncio.sleep(10)
+        await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
+
 client.run(token())

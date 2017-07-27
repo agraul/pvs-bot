@@ -18,6 +18,14 @@ import RoleManagement
 # TODO: welcome_public
 
 # TODO: change_settings
+async def clear_role_channel(client, role_channel, two_weeks):
+    await client.purge_from(
+            role_channel, check=not_first_message, after=two_weeks)
+
+
+def not_first_message(message):
+    return message.id != '292124920417091584'
+
 
 async def run_op(client, message, bot_log, utc):
     levels = {'high': ['admin'],

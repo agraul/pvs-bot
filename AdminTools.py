@@ -18,6 +18,18 @@ import RoleManagement
 # TODO: welcome_public
 
 # TODO: change_settings
+async def purge_channel(client, message, *args):
+    number = int(message.content[6:].strip())
+    chan = message.channel
+    await client.send_message(
+        chan, "Do you really want to purge {} messages? (y/N)".format(number))
+    check = await client.wait_for_message(
+        timeout=10, author=message.author, content="y")
+
+    if check is not None:
+        await client.purge_from(chan, limit=number)
+
+
 async def clear_role_channel(client, role_channel, two_weeks):
     await client.purge_from(
             role_channel, check=not_first_message, after=two_weeks)
@@ -39,6 +51,7 @@ async def run_op(client, message, bot_log, utc):
            'timein': [RoleManagement.timein_user, 'medium'],
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
+           'purge': [purge_channel, 'high'],
           }
     # unwrap message into operation and arguments
     try:

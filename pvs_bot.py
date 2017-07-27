@@ -53,7 +53,7 @@ async def on_message(message):
         await asyncio.sleep(10)
         await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
 
-    await AdminTools.log_message(client, message, chatlog, utc)
+    await AdminTools.log_message(client, message, chatlog, utc, forbidden)
 
 
 @client.event

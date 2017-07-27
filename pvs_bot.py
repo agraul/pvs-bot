@@ -1,10 +1,11 @@
+#!/home/deploy/bots/pvs-bot/discord/bin/python
 import datetime
 import logging
 import asyncio
 
 import discord
 
-from credentials import token
+from credentials import token1
 import RoleManagement
 import AdminTools
 
@@ -33,9 +34,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # real server role_assignment = client.get_channel('292124021628338197')
-    role_assignment = client.get_channel('248569093651693568') # test
-    bot_log = client.get_channel('302353252698161153')
+    role_assignment = client.get_channel('292124021628338197')
+    # role_assignment = client.get_channel('248569093651693568') # test
+    bot_log = client.get_channel('340225451257495553')
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
 
@@ -49,4 +50,4 @@ async def on_message(message):
         await asyncio.sleep(10)
         await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
 
-client.run(token())
+client.run(token1())

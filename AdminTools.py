@@ -38,7 +38,8 @@ async def log_message_delete(client, message, chatlog, utc, forbidden):
 
 # TODO: change_settings
 async def purge_channel(client, message, *args):
-    number = int(message.content[6:].strip())
+    number = 4
+    number += int(message.content[6:].strip())
     chan = message.channel
     await client.send_message(
         chan, "Do you really want to purge {} messages? (y/N)".format(number))

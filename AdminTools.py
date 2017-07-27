@@ -27,7 +27,7 @@ async def log_message_edit(client, old, new, chatlog, utc):
 async def log_message_delete(client, message, chatlog, utc):
     await client.send_message(
         chatlog, "{}UTC: {} `DELETED` - {}".format(
-            utc, message.author, message.content)
+            utc, message.author, message.content))
 
 # TODO: welcome_private
 

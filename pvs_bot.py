@@ -57,7 +57,7 @@ async def on_message(message):
 @client.event
 async def on_message_delete(message):
     chatlog = client.get_channel('245725379250225152')
-    await AdminTools.log_message_delete(client, message, chatlog, utc):
+    await AdminTools.log_message_delete(client, message, chatlog, utc)
 
 
 @client.event

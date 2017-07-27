@@ -12,22 +12,25 @@ import RoleManagement
 # TODO: announce
 
 # log
-async def log_message(client, message, chatlog, utc):
-    await client.send_message(
-        chatlog, "{}UTC: {} `MESSAGE` - {}".format(
-            utc, message.author, message.content))
+async def log_message(client, message, chatlog, utc, forbidden):
+    if message.channel not in forbidden:
+        await client.send_message(
+            chatlog, "{}UTC: {} `MESSAGE` - {}".format(
+                utc, message.author, message.content))
 
 
-async def log_message_edit(client, old, new, chatlog, utc):
-    await client.send_message(
-        chatlog, "{}UTC: {} `EDIT` - {} `TO` {}".format(
-           utc, old.author, old.content, new.content))
+async def log_message_edit(client, old, new, chatlog, utc, forbidden):
+    if message.channel not in forbidden:
+        await client.send_message(
+            chatlog, "{}UTC: {} `EDIT` - {} `TO` {}".format(
+               utc, old.author, old.content, new.content))
 
 
-async def log_message_delete(client, message, chatlog, utc):
-    await client.send_message(
-        chatlog, "{}UTC: {} `DELETED` - {}".format(
-            utc, message.author, message.content)
+async def log_message_delete(client, message, chatlog, utc, forbidden):
+    if message.channel not in forbidden:
+        await client.send_message(
+            chatlog, "{}UTC: {} `DELETED` - {}".format(
+                utc, message.author, message.content))
 
 # TODO: welcome_private
 

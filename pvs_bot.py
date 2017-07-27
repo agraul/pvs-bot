@@ -40,6 +40,8 @@ async def on_message(message):
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
     chatlog = client.get_channel('245725379250225152')
+    admin_chat = client.get_channel('182519378682576896')
+    forbidden = [admin_chat, bot_log]
 
     try:
         if message.content[0] == '!':
@@ -57,12 +59,14 @@ async def on_message(message):
 @client.event
 async def on_message_delete(message):
     chatlog = client.get_channel('245725379250225152')
-    await AdminTools.log_message_delete(client, message, chatlog, utc):
+    await AdminTools.log_message_delete(client, message,
+                                        chatlog, utc, forbidden)
 
 
 @client.event
 async def on_message_edit(before, after):
     chatlog = client.get_channel('245725379250225152')
-    await AdminTools.log_message_edit(client, before, after, chatlog, utc)
+    await AdminTools.log_message_edit(client, before, after,
+                                      chatlog, utc, forbidden)
 
 client.run(token1())

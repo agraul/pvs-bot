@@ -249,6 +249,10 @@ async def timeout_user(client, message, bot_log, utcnow):
             message.channel, "{}: {} got timed out by {}".format(
                 utc, t, message.author))
 
+        await client.send_message(
+            bot_log, "{}: {} got timed out by {}".format(
+                utc, t, message.author))
+
 async def timein_user(client, message, bot_log, utc):
 
     message_content = message.content[8:].lstrip()
@@ -281,3 +285,7 @@ async def timein_user(client, message, bot_log, utc):
         await client.send_message(
             message.channel, "{}:{}'s timeout was ended by {}".format(
                 utc, t.name, message.author))
+        await client.send_message(
+            bot_log, "{}:{}'s timeout was ended by {}".format(
+                utc, t.name, message.author))
+

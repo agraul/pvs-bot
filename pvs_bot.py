@@ -39,6 +39,7 @@ async def on_message(message):
     bot_log = client.get_channel('340225451257495553')
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+    chatlog = client.get_channel('245725379250225152')
 
     try:
         if message.content[0] == '!':
@@ -49,5 +50,19 @@ async def on_message(message):
     if message.channel == role_assignment:
         await asyncio.sleep(10)
         await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
+
+    await AdminTools.log_message(client, message, chatlog, utc)
+
+
+@client.event
+async def on_message_delete(message):
+    chatlog = client.get_channel('245725379250225152')
+    await AdminTools.log_message_delete(client, message, chatlog, utc):
+
+
+@client.event
+async def on_message_edit(before, after):
+    chatlog = client.get_channel('245725379250225152')
+    await AdminTools.log_message_edit(client, before, after, chatlog, utc)
 
 client.run(token1())

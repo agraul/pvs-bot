@@ -52,6 +52,7 @@ async def run_op(client, message, bot_log, utc):
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
            'purge': [purge_channel, 'high'],
+           'embed': [bot_log.embed, 'low'],
           }
     # unwrap message into operation and arguments
     try:

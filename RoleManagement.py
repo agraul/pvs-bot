@@ -35,9 +35,9 @@ async def assign_role(client, message, bot_log, utcnow):
     Assign a role to a user.
 
     :param client: bot instance of discord.Client()
-    :param message: Trigger message: '+!role' or '+!role user'
-    :param assignable_roles: list of allowed roles
+    :param message: Trigger message: '!+ role' or '! +role user'
     :param bot_log: channel bot is logging to
+    :param utcnow: current utc time
     """
 
     assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
@@ -97,16 +97,15 @@ async def assign_role(client, message, bot_log, utcnow):
                 await client.send_message(message.channel,
                                           "{} can't be added this way"
                                           .format(discord_role))
-                await client.send_message(bot_log, "{}:{} tried to add {}"
-                                          .format(utcnow, user, discord_role))
+               # await client.send_message(bot_log, "{}:{} tried to add {}"
+               #                           .format(utcnow, user, discord_role))
         # discord_role has no .name if None
         except AttributeError:
             await client.send_message(message.channel,
                                       "{} is not a valid role."
                                       .format(role))
-            await client.send_message(bot_log, "{}: {} tried to add {}."
-                                          .format(utcnow, user, role))
-        # TODO: cleanup afterwards
+           # await client.send_message(bot_log, "{}: {} tried to add {}."
+           #                               .format(utcnow, user, role))
 
 async def remove_role(client, message, bot_log, utcnow):
     """
@@ -130,15 +129,15 @@ async def remove_role(client, message, bot_log, utcnow):
         await client.send_message(message.channel,
                                   "{} got removed from {}".format(
                                       user, discord_role))
-        await client.send_message(bot_log, "`{}`: {} removed itself from {}."
-                                  .format(utcnow, user, discord_role))
+        await client.send_message(
+            bot_log, "`{}`: {} removed him/herself from {}.".format(
+                utcnow, user, discord_role))
     else:
         await client.send_message(message.channel, "{} is not a valid role."
                                   .format(role))
-        await client.send_message(bot_log, "`{}`: {} tried to remove {}."
-                                  .format(utcnow, user, role))
+        # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
+        #                           .format(utcnow, user, role))
 
-        # TODO: cleanup afterwards
 
 async def reduce_roles(client, message, bot_log, utcnow):
     """

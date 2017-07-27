@@ -38,16 +38,20 @@ async def log_message_delete(client, message, chatlog, utc, forbidden):
 
 # TODO: change_settings
 async def purge_channel(client, message, *args):
-    number = 4
-    number += int(message.content[6:].strip())
+    to_purge = 3
+    num_input = int(message.content[6:].strip())
+    if num_input != 0:
+        to_purge += num_input
+    else:
+        to_purge += 1
     chan = message.channel
     await client.send_message(
-        chan, "Do you really want to purge {} messages? (y/N)".format(number))
+        chan, "Do you really want to purge {} messages? (y/N)".format(num_input))
     check = await client.wait_for_message(
         timeout=10, author=message.author, content="y")
 
     if check is not None:
-        await client.purge_from(chan, limit=number)
+        await client.purge_from(chan, limit=to_purge)
 
 
 async def clear_role_channel(client, role_channel, two_weeks):

@@ -100,3 +100,4 @@ discord_env/
 credentials.py
 .idea/
 verify.py
+discord/

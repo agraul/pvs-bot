@@ -36,19 +36,15 @@ async def on_ready():
 async def on_message(message):
     role_assignment = client.get_channel('292124021628338197')
     # role_assignment = client.get_channel('248569093651693568') # test
-    bot_log = client.get_channel('340225451257495553')
-    utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+    bot_log = client.get_channel('340225451257495553') 
     chatlog = client.get_channel('245725379250225152')
     admin_chat = client.get_channel('182519378682576896')
     forbidden = [admin_chat, bot_log, chatlog]
+    utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
     try:
         if message.content[0] == '!':
             await AdminTools.run_op(client, message, bot_log, utc)
-            if message.channel == role_assignment:
-                await asyncio.sleep(10)
-                await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
     except IndexError:
          pass
 

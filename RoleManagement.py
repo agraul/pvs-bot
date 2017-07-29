@@ -6,6 +6,9 @@ from credentials import riot_api_key
 # GLOBAL VARIABLES
 timeout_list = {}
 tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
+def not_first_message(message):
+    return message.id != '292124920417091584'
+two_weeks_ago = 
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
@@ -15,7 +18,7 @@ async def check_role_in_server(message, role):
     for s_role in message.server.roles:
         server_roles.append(s_role.name)
 
-    if role.lower() == "diamond":
+    if role.lower() == "diamond" or role.lower() == "diamond+":
         role = "Diamond +"
 
     # check role (different capitalisation) against server roles
@@ -31,6 +34,7 @@ async def check_role_in_server(message, role):
     # set discord_role to None if role can't be found on server
     else:
         discord_role = None
+    print(discord_role)
     return discord_role
 
 async def assign_role(client, message, bot_log, utc):
@@ -47,7 +51,7 @@ async def assign_role(client, message, bot_log, utc):
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
                         'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC',
                         'Support', 'OCE']
-
+    two_weeks = utc - datetime.timedelta(days=14)
     if message.channel != discord.utils.get(message.server.channels,
                                             name='role-assignment'):
         return None
@@ -111,6 +115,9 @@ async def assign_role(client, message, bot_log, utc):
                                       .format(role))
            # await client.send_message(bot_log, "{}: {} tried to add {}."
            #                               .format(utcnow, user, role))
+        two_weeks = utc - datetime.timedelta(days=14)
+        await client.purge_from(message.channel, limt=2,
+        check=not_first_message, after=two_weeks_ago)
 
 async def remove_role(client, message, bot_log, utcnow):
     """
@@ -142,7 +149,9 @@ async def remove_role(client, message, bot_log, utcnow):
                                   .format(role))
         # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
         #                           .format(utcnow, user, role))
-
+    await client.purge_from(message.channel, limt=2, check=not_first_message,
+                             after=two_weeks_ago)
+    
 
 async def reduce_roles(client, message, bot_log, utcnow):
     """

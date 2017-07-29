@@ -59,8 +59,7 @@ async def clear_role_channel(client, role_channel, two_weeks):
             role_channel, limit=2, check=not_first_message, after=two_weeks)
 
 
-def not_first_message(message):
-    return message.id != '292124920417091584'
+
 
 
 async def run_op(client, message, bot_log, utc):

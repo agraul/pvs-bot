@@ -1,5 +1,6 @@
 # Role Management functions
 import discord
+import datetime
 from riot_api import RankInfo
 from credentials import riot_api_key
 
@@ -51,7 +52,7 @@ async def assign_role(client, message, bot_log, utc):
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
                         'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC',
                         'Support', 'OCE']
-    two_weeks = utc - datetime.timedelta(days=14)
+    two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
     if message.channel != discord.utils.get(message.server.channels,
                                             name='role-assignment'):
         return None
@@ -115,9 +116,8 @@ async def assign_role(client, message, bot_log, utc):
                                       .format(role))
            # await client.send_message(bot_log, "{}: {} tried to add {}."
            #                               .format(utcnow, user, role))
-        two_weeks = utc - datetime.timedelta(days=14)
         await client.purge_from(message.channel, limt=2,
-        check=not_first_message, after=two_weeks_ago)
+        check=not_first_message, after=two_weeks)
 
 async def remove_role(client, message, bot_log, utcnow):
     """
@@ -127,6 +127,7 @@ async def remove_role(client, message, bot_log, utcnow):
     :param message: Trigger message: '-!role'
     :param bot_log: channel bot is logging to
     """
+    two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
     if message.channel != discord.utils.get(message.server.channels,
                                             name='role-assignment'):
         return None
@@ -150,8 +151,8 @@ async def remove_role(client, message, bot_log, utcnow):
         # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
         #                           .format(utcnow, user, role))
     await client.purge_from(message.channel, limt=2, check=not_first_message,
-                             after=two_weeks_ago)
-    
+                             after=two_weeks)
+
 
 async def reduce_roles(client, message, bot_log, utcnow):
     """

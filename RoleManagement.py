@@ -8,7 +8,7 @@ timeout_list = {}
 tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
 def not_first_message(message):
     return message.id != '292124920417091584'
-two_weeks_ago = 
+
 
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""

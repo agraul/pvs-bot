@@ -20,7 +20,7 @@ async def log_message(client, message, chatlog, utc, forbidden):
 
 
 async def log_message_edit(client, old, new, chatlog, utc, forbidden):
-    if message.channel not in forbidden:
+    if old.channel not in forbidden:
         await client.send_message(
             chatlog, "**{}UTC: {}:{}** `EDIT` - {} `TO` {}".format(
                utc, old.channel, old.author, old.content, new.content))
@@ -81,6 +81,7 @@ async def run_op(client, message, bot_log, utc):
         operation, _ = message.content[1:].split(maxsplit=1)
     except ValueError:
         await client.send_message(message.channel, "I need more information")
+        return None
 
     # check if operation exists
     if operation in ops.keys():

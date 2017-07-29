@@ -36,7 +36,7 @@ async def on_ready():
 async def on_message(message):
     role_assignment = client.get_channel('292124021628338197')
     # role_assignment = client.get_channel('248569093651693568') # test
-    bot_log = client.get_channel('340225451257495553') 
+    bot_log = client.get_channel('340225451257495553')
     chatlog = client.get_channel('245725379250225152')
     admin_chat = client.get_channel('182519378682576896')
     forbidden = [admin_chat, bot_log, chatlog]
@@ -54,7 +54,10 @@ async def on_message(message):
 
 @client.event
 async def on_message_delete(message):
+    bot_log = client.get_channel('340225451257495553')
     chatlog = client.get_channel('245725379250225152')
+    admin_chat = client.get_channel('182519378682576896')
+    forbidden = [admin_chat, bot_log, chatlog]
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     await AdminTools.log_message_delete(client, message,
                                         chatlog, utc, forbidden)
@@ -62,7 +65,10 @@ async def on_message_delete(message):
 
 @client.event
 async def on_message_edit(before, after):
+    bot_log = client.get_channel('340225451257495553')
     chatlog = client.get_channel('245725379250225152')
+    admin_chat = client.get_channel('182519378682576896')
+    forbidden = [admin_chat, bot_log, chatlog]
     utc = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     await AdminTools.log_message_edit(client, before, after,
                                       chatlog, utc, forbidden)

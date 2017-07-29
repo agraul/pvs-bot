@@ -1,5 +1,6 @@
 # Role Management functions
 import discord
+import asyncio
 import datetime
 from riot_api import RankInfo
 from credentials import riot_api_key
@@ -35,7 +36,6 @@ async def check_role_in_server(message, role):
     # set discord_role to None if role can't be found on server
     else:
         discord_role = None
-    print(discord_role)
     return discord_role
 
 async def assign_role(client, message, bot_log, utc):
@@ -76,20 +76,23 @@ async def assign_role(client, message, bot_log, utc):
             user = message.author
 
         discord_role = await check_role_in_server(message, role)
-        # check if discovered role is a tier role
-        tier_role = False
-        if discord_role.name.lower() in tier_roles:
-            tier_role = True
+        print(discord_role)
 
         # check if discovered role is allowed to be assigned
+        tier_role = False
         try:
+            # check if discovered role is a tier role
+            if discord_role.name.lower() in tier_roles:
+                tier_role = True
+
             if discord_role.name in assignable_roles and tier_role is False:
                 await client.send_message(message.channel,
-                                          "{} UTC:{} got added to {}"
+                                          "{} got added to {}"
                                           .format(user, discord_role))
                 await client.add_roles(user, discord_role)
-                await client.send_message(bot_log, "{} got added to {}"
-                                          .format(user, discord_role))
+                await client.send_message(bot_log, "{} UTC:{} got added to {}"
+                                          .format(utc, user, discord_role))
+
             elif discord_role.name in assignable_roles and tier_role is True:
                 # check for previous rank roles and replace them
                 new_roles = []
@@ -101,14 +104,19 @@ async def assign_role(client, message, bot_log, utc):
 
                 await client.send_message(message.channel, "{} got added to {}"
                                           .format(user, discord_role))
-                await client.send_message(bot_log, "{} got added to {}"
-                                          .format(user, discord_role))
+                await client.send_message(bot_log, "{} UTC:{} got added to {}"
+                                          .format(utc, user, discord_role))
             else:
                 await client.send_message(message.channel,
                                           "{} can't be added this way"
                                           .format(discord_role))
                # await client.send_message(bot_log, "{}:{} tried to add {}"
                #                           .format(utcnow, user, discord_role))
+            await asyncio.sleep(5)
+            await client.purge_from(
+                message.channel, limit=2, check=not_first_message,
+                after=two_weeks)
+
         # discord_role has no .name if None
         except AttributeError:
             await client.send_message(message.channel,
@@ -116,8 +124,7 @@ async def assign_role(client, message, bot_log, utc):
                                       .format(role))
            # await client.send_message(bot_log, "{}: {} tried to add {}."
            #                               .format(utcnow, user, role))
-        await client.purge_from(message.channel, limit=2,
-        check=not_first_message, after=two_weeks)
+
 
 async def remove_role(client, message, bot_log, utcnow):
     """
@@ -150,8 +157,9 @@ async def remove_role(client, message, bot_log, utcnow):
                                   .format(role))
         # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
         #                           .format(utcnow, user, role))
-    await client.purge_from(message.channel, limit=2, check=not_first_message,
-                             after=two_weeks)
+    await asyncio.sleep(5)
+    await client.purge_from(
+        message.channel, limit=2, check=not_first_message, after=two_weeks)
 
 
 async def reduce_roles(client, message, bot_log, utcnow):

@@ -116,7 +116,7 @@ async def assign_role(client, message, bot_log, utc):
                                       .format(role))
            # await client.send_message(bot_log, "{}: {} tried to add {}."
            #                               .format(utcnow, user, role))
-        await client.purge_from(message.channel, limt=2,
+        await client.purge_from(message.channel, limit=2,
         check=not_first_message, after=two_weeks)
 
 async def remove_role(client, message, bot_log, utcnow):
@@ -150,7 +150,7 @@ async def remove_role(client, message, bot_log, utcnow):
                                   .format(role))
         # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
         #                           .format(utcnow, user, role))
-    await client.purge_from(message.channel, limt=2, check=not_first_message,
+    await client.purge_from(message.channel, limit=2, check=not_first_message,
                              after=two_weeks)
 
 

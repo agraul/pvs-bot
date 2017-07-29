@@ -15,6 +15,9 @@ async def check_role_in_server(message, role):
     for s_role in message.server.roles:
         server_roles.append(s_role.name)
 
+    if role.lower() == "diamond":
+        role = "Diamdon +"
+
     # check role (different capitalisation) against server roles
     if role.lower() in server_roles:
         discord_role = discord.utils.get(message.server.roles,
@@ -42,7 +45,8 @@ async def assign_role(client, message, bot_log, utc):
 
     assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
-                        'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC', 'Support']
+                        'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC',
+                        'Support', 'OCE']
 
     if message.channel != discord.utils.get(message.server.channels,
                                             name='role-assignment'):

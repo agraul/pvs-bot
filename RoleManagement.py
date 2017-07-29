@@ -16,7 +16,7 @@ async def check_role_in_server(message, role):
         server_roles.append(s_role.name)
 
     if role.lower() == "diamond":
-        role = "Diamdon +"
+        role = "Diamond +"
 
     # check role (different capitalisation) against server roles
     if role.lower() in server_roles:

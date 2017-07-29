@@ -46,12 +46,12 @@ async def on_message(message):
     try:
         if message.content[0] == '!':
             await AdminTools.run_op(client, message, bot_log, utc)
+            if message.channel == role_assignment:
+                await asyncio.sleep(10)
+                await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
     except IndexError:
          pass
 
-    if message.channel == role_assignment:
-        await asyncio.sleep(10)
-        await AdminTools.clear_role_channel(client, role_assignment, two_weeks)
 
     # await AdminTools.log_message(client, message, chatlog, utc, forbidden)
 

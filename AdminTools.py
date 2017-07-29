@@ -56,7 +56,7 @@ async def purge_channel(client, message, *args):
 
 async def clear_role_channel(client, role_channel, two_weeks):
     await client.purge_from(
-            limit=2, role_channel, check=not_first_message, after=two_weeks)
+            role_channel, limit=2, check=not_first_message, after=two_weeks)
 
 
 def not_first_message(message):

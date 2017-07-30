@@ -1,13 +1,11 @@
 #!/home/deploy/bots/pvs-bot/discord/bin/python
 import datetime
 import logging
-import asyncio
 
 import discord
 
-from credentials import token1
-import RoleManagement
-import AdminTools
+import credentials
+import launcher
 
 # logging (copied from discord.py documentation)
 logger = logging.getLogger('discord')
@@ -44,7 +42,7 @@ async def on_message(message):
 
     try:
         if message.content[0] == '!':
-            await AdminTools.run_op(client, message, bot_log, utc)
+            await launcher.run_op(client, message, bot_log, utc)
     except IndexError:
          pass
 
@@ -73,4 +71,4 @@ async def on_message_edit(before, after):
     await AdminTools.log_message_edit(client, before, after,
                                       chatlog, utc, forbidden)
 
-client.run(token1())
+client.run(credentials.token2())

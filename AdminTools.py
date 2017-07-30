@@ -37,67 +37,9 @@ async def log_message_delete(client, message, chatlog, utc, forbidden):
 # TODO: welcome_public
 
 # TODO: change_settings
-async def purge_channel(client, message, *args):
-    to_purge = 3
-    num_input = int(message.content[6:].strip())
-    if num_input != 0:
-        to_purge += num_input
-    else:
-        to_purge += 1
-    chan = message.channel
-    await client.send_message(
-        chan, "Do you really want to purge {} messages? (y/N)".format(num_input))
-    check = await client.wait_for_message(
-        timeout=10, author=message.author, content="y")
-
-    if check is not None:
-        await client.purge_from(chan, limit=to_purge)
-
-
-async def clear_role_channel(client, role_channel, two_weeks):
-    await client.purge_from(
-            role_channel, limit=2, check=not_first_message, after=two_weeks)
 
 
 
 
 
-async def run_op(client, message, bot_log, utc):
-    levels = {'high': ['admin'],
-              'medium': ['moderator', 'admin'],
-              'low': ['@everyone']
-             }
 
-    ops = {'+': [RoleManagement.assign_role, 'low'],
-           '-': [RoleManagement.remove_role, 'low'],
-           'reduce': [RoleManagement.reduce_roles, 'high'],
-           'timein': [RoleManagement.timein_user, 'medium'],
-           'timeout': [RoleManagement.timeout_user, 'medium'],
-           'verify': [RoleManagement.verify_rank, 'low'],
-           'purge': [purge_channel, 'high'],
-          }
-    # unwrap message into operation and arguments
-    try:
-        operation, _ = message.content[1:].split(maxsplit=1)
-    except ValueError:
-        await client.send_message(message.channel, "I need more information")
-        return None
-
-    # check if operation exists
-    if operation in ops.keys():
-        op = ops[operation]
-    else:
-        # await client.send_message(message.channel,
-        #                           "Operation `{}` not found".format(operation))
-        return None
-
-    SUCCESS = False
-    required_roles = levels[op[1]]
-    for r in message.author.roles:
-        if r.name in required_roles:
-            await op[0](client, message, bot_log, utc)
-            SUCCESS = True
-            break
-    if SUCCESS is not True:
-        client.send_message(message.channel,
-                            "Failed running `{}`".format(operation))

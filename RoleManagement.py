@@ -4,12 +4,12 @@ import asyncio
 import datetime
 from riot_api import RankInfo
 from credentials import riot_api_key
+import purger
 
 # GLOBAL VARIABLES
 timeout_list = {}
 tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
-def not_first_message(message):
-    return message.id != '292124920417091584'
+
 
 
 async def check_role_in_server(message, role):
@@ -57,59 +57,68 @@ async def assign_role(client, message, bot_log, utc):
                                             name='role-assignment'):
         return None
     # strip trigger and split content
-    message_contents = message.content[2:].lstrip().split(' ')
+    wanted_roles = message.content[2:].lstrip().split(' ')
+    user = message.author
 
-    # check if input is empty
-    if len(message_contents) == 1 and message_contents[0] == '':
+    if len(wanted_roles) == 1 and wanted_roles[0] == '':
         pass
     else:
-        # set role to first string
-        role = message_contents[0]
-        # set user to second string, defaulting to self if no second string
-        try:
-            user = discord.utils.get(message.server.members,
-                                     name=message_contents[1])
-            if user is None:
-                user = discord.utils.get(message.server.members,
-                                         display_name=message_contents[1])
-        except IndexError:
-            user = message.author
+        dis_roles = []
+        for w_role in wanted_roles:
+            discord_role = await check_role_in_server(message, w_role)
+            if discord_role is not None:
+                dis_roles.append(discord_role)
 
-        discord_role = await check_role_in_server(message, role)
-        print(discord_role)
+        if len(dis_roles) == 0:
+            await client.send_message(
+                message.channel, "You need to provide at least one valid role.")
+            return None
 
-        # check if discovered role is allowed to be assigned
+        # check if discovered roles is allowed to be assigned
         tier_role = False
         try:
-            # check if discovered role is a tier role
-            if discord_role.name.lower() in tier_roles:
-                tier_role = True
+            for discord_role in dis_roles:
+                # check if discovered role is a tier role
+                if discord_role.name.lower() in tier_roles:
+                    tier_role = True
+                    break
 
-            if discord_role.name in assignable_roles and tier_role is False:
-                await client.send_message(message.channel,
-                                          "{} got added to {}"
-                                          .format(user, discord_role))
-                await client.add_roles(user, discord_role)
-                await client.send_message(bot_log, "{} UTC:{} got added to {}"
-                                          .format(utc, user, discord_role))
+            if tier_role is False:
+                for discord_role in dis_roles:
+                    if discord_role.name in assignable_roles:
+                        await client.add_roles(user, *dis_roles)
+                        await client.send_message(
+                            message.channel, "{} got added to ".format(user)
+                            + ("{} " * len(dis_roles)).format(*dis_roles))
+                        await client.send_message(
+                            bot_log, "{} UTC:{} got added to ".format(utc, user)
+                            + ("{} " * len(dis_roles)).format(*dis_roles))
+                    else:
+                        await client.send_message(
+                            "{} can't be added this way!".format(discord_role))
 
-            elif discord_role.name in assignable_roles and tier_role is True:
+
+            elif tier_role is True:
                 # check for previous rank roles and replace them
                 new_roles = []
                 for r in user.roles:
                     if r.name.lower() not in tier_roles:
                         new_roles.append(r)
-                new_roles.append(discord_role)
-                await client.replace_roles(user, *new_roles)
+                for discord_role in dis_roles:
+                    if discord_role.name in assignable_roles:
+                        new_roles.append(discord_role)
+                    else:
+                        await client.send_message(
+                            "{} can't be added this way!".format(discord_role))
 
-                await client.send_message(message.channel, "{} got added to {}"
-                                          .format(user, discord_role))
-                await client.send_message(bot_log, "{} UTC:{} got added to {}"
-                                          .format(utc, user, discord_role))
-            else:
-                await client.send_message(message.channel,
-                                          "{} can't be added this way"
-                                          .format(discord_role))
+                await client.replace_roles(user, *new_roles)
+                await client.send_message(
+                    message.channel, "{} got added to ".format(user)
+                    + ("{} " * len(dis_roles)).format(*dis_roles))
+                await client.send_message(
+                    bot_log, "{} UTC:{} got added to ".format(utc, user)
+                    + ("{} " * len(dis_roles)).format(*dis_roles))
+
                # await client.send_message(bot_log, "{}:{} tried to add {}"
                #                           .format(utcnow, user, discord_role))
             await asyncio.sleep(5)

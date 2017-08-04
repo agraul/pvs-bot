@@ -12,7 +12,6 @@ timeout_list = {}
 tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
 
 
-
 async def check_role_in_server(message, role):
     """Search for role in server and return role object"""
 
@@ -44,9 +43,8 @@ async def assign_role(client, message, bot_log):
     Assign a role to a user.
 
     :param client: bot instance of discord.Client()
-    :param message: Trigger message: '!+ role' or '! +role user'
+    :param message: Trigger message: '!+ role' or '!+ role1 role2'
     :param bot_log: channel bot is logging to
-    :param utcnow: current utc time
     """
 
     assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
@@ -71,12 +69,15 @@ async def assign_role(client, message, bot_log):
                 dis_roles.append(discord_role)
 
         if len(dis_roles) == 0:
-            await client.send_message(
+            m = await client.send_message(
                 message.channel, "You need to provide at least one valid role.")
+            await asyncio.sleep(5)
+            await purger.remove_command_response(client, message, m)
             return None
 
         # check if discovered roles is allowed to be assigned
         tier_role = False
+        got_added = False
         try:
             for discord_role in dis_roles:
                 # check if discovered role is a tier role
@@ -88,16 +89,15 @@ async def assign_role(client, message, bot_log):
                 for discord_role in dis_roles:
                     if discord_role.name in assignable_roles:
                         await client.add_roles(user, *dis_roles)
-                        await client.send_message(
-                            message.channel, "{} got added to ".format(user)
-                            + ("{} " * len(dis_roles)).format(*dis_roles))
-                        await client.send_message(
-                            bot_log, "{} UTC:{} got added to ".format(utc, user)
-                            + ("{} " * len(dis_roles)).format(*dis_roles))
+                        got_added = True
                     else:
-                        await client.send_message(
+                        m = await client.send_message(
                             "{} can't be added this way!".format(discord_role))
-
+                if got_added is True:
+                    m = await client.send_message(
+                        message.channel, "{} got added to ".format(user)
+                                         + ("{} " * len(dis_roles)).format(
+                            *dis_roles))
 
             elif tier_role is True:
                 # check for previous rank roles and replace them
@@ -109,31 +109,24 @@ async def assign_role(client, message, bot_log):
                     if discord_role.name in assignable_roles:
                         new_roles.append(discord_role)
                     else:
-                        await client.send_message(
+                        m = await client.send_message(
                             "{} can't be added this way!".format(discord_role))
+                        await asyncio.sleep(5)
+                        await purger.remove_command_response(client, message, m)
 
                 await client.replace_roles(user, *new_roles)
-                await client.send_message(
-                    message.channel, "{} got added to ".format(user)
-                    + ("{} " * len(dis_roles)).format(*dis_roles))
-                await client.send_message(
-                    bot_log, "{} UTC:{} got added to ".format(utc, user)
-                    + ("{} " * len(dis_roles)).format(*dis_roles))
+                m = await client.send_message(
+                        message.channel, "{} got added to ".format(user)
+                        + ("{} " * len(dis_roles)).format(*dis_roles))
 
-               # await client.send_message(bot_log, "{}:{} tried to add {}"
-               #                           .format(utcnow, user, discord_role))
             await asyncio.sleep(5)
-            await client.purge_from(
-                message.channel, limit=2, check=not_first_message,
-                after=two_weeks)
+            await purger.remove_command_response(client, message, m)
 
         # discord_role has no .name if None
         except AttributeError:
             await client.send_message(message.channel,
                                       "{} is not a valid role."
                                       .format(role))
-           # await client.send_message(bot_log, "{}: {} tried to add {}."
-           #                               .format(utcnow, user, role))
 
 
 async def remove_role(client, message, bot_log):
@@ -156,20 +149,15 @@ async def remove_role(client, message, bot_log):
 
     if discord_role is not None:
         await client.remove_roles(user, discord_role)
-        await client.send_message(message.channel,
+        m = await client.send_message(message.channel,
                                   "{} got removed from {}".format(
                                       user, discord_role))
-        await client.send_message(
-            bot_log, "`{}`: {} removed him/herself from {}.".format(
-                utcnow, user, discord_role))
     else:
-        await client.send_message(message.channel, "{} is not a valid role."
-                                  .format(role))
-        # await client.send_message(bot_log, "`{}`: {} tried to remove {}."
-        #                           .format(utcnow, user, role))
+        m = await client.send_message(message.channel,
+                                      "{} is not a valid role.".format(role))
+
     await asyncio.sleep(5)
-    await client.purge_from(
-        message.channel, limit=2, check=not_first_message, after=two_weeks)
+    await purger.remove_command_response(client, message, m)
 
 
 async def reduce_roles(client, message, bot_log):

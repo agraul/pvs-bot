@@ -41,4 +41,4 @@ async def on_message(message):
     except IndexError:
          pass
 
-client.run(credentials.token2())
+client.run(credentials.token1())

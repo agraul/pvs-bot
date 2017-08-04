@@ -20,10 +20,14 @@ async def run_op(client, message, bot_log):
            'purge': [purger.purge_channel, 'high'],
           }
     # unwrap message into operation and arguments
+    operation = message.content[1:]
     try:
-        operation, _ = message.content[1:].split(maxsplit=1)
+        operation, _ = operation.split(maxsplit=1)
     except ValueError:
-        return None
+        if operation == 'purge':
+            pass
+        else:
+            return None
 
     # check if operation exists
     if operation in ops.keys():

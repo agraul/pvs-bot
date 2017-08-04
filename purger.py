@@ -7,7 +7,7 @@ def not_instructions(message):
 async def purge_channel(client, message, bot_log):
     role_channel = discord.utils.get(message.server.channels,
                                      name='role-assignment')
-
+    to_purge = 3
     # try parse number from input
     try:
         num_in = int(message.content[6:].strip())
@@ -16,9 +16,9 @@ async def purge_channel(client, message, bot_log):
 
     # if input is 0 or invalid, purge 1 message
     if num_in != 0:
-        to_purge = num_in
+        to_purge += num_in
     else:
-        to_purge = 1
+        to_purge += 1
 
     confirmed = ['y', 'yes']
     chan = message.channel
@@ -34,9 +34,9 @@ async def purge_channel(client, message, bot_log):
                 chan, check=not_instructions, limit=to_purge)
         else:
             await client.purge_from(chan, limit=to_purge)
+            await asyncio.sleep(5)
+            await remove_command_response(client, message, m, check)
 
-    await asyncio.sleep(5)
-    await remove_command_response(client, message, m, check)
 
 async def remove_command_response(client, *messages):
     passed_messages = []

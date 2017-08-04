@@ -1,9 +1,9 @@
 import RoleManagement
-import logger
+import bot_logger
 import purger
 
 
-async def run_op(client, message, bot_log, utc):
+async def run_op(client, message, bot_log):
     levels = {
              'admin': ['admin'],
              'high': ['admin', 'moderator'],
@@ -18,7 +18,6 @@ async def run_op(client, message, bot_log, utc):
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
            'purge': [purger.purge_channel, 'high'],
-           'embed': [logger.test_embed, 'low']
           }
     # unwrap message into operation and arguments
     try:
@@ -32,13 +31,14 @@ async def run_op(client, message, bot_log, utc):
     else:
         return None
 
-    SUCCESS = False
+    success = False
     required_roles = levels[op[1]]
+
     for r in message.author.roles:
         if r.name in required_roles:
-            await op[0](client, message, bot_log, utc)
-            SUCCESS = True
+            await op[0](client, message, bot_log)
+            success = True
             break
-    if SUCCESS is not True:
+    if success is not True:
         client.send_message(message.channel,
                             "Failed running `{}`".format(operation))

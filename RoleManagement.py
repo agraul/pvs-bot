@@ -4,6 +4,7 @@ import asyncio
 import datetime
 from riot_api import RankInfo
 from credentials import riot_api_key
+import bot_logger
 import purger
 
 # GLOBAL VARIABLES
@@ -38,7 +39,7 @@ async def check_role_in_server(message, role):
         discord_role = None
     return discord_role
 
-async def assign_role(client, message, bot_log, utc):
+async def assign_role(client, message, bot_log):
     """
     Assign a role to a user.
 
@@ -135,7 +136,7 @@ async def assign_role(client, message, bot_log, utc):
            #                               .format(utcnow, user, role))
 
 
-async def remove_role(client, message, bot_log, utcnow):
+async def remove_role(client, message, bot_log):
     """
     Remove a role from user.
 
@@ -171,7 +172,7 @@ async def remove_role(client, message, bot_log, utcnow):
         message.channel, limit=2, check=not_first_message, after=two_weeks)
 
 
-async def reduce_roles(client, message, bot_log, utcnow):
+async def reduce_roles(client, message, bot_log):
     """
     Remove all (but explicitly stated) roles from another user.
 
@@ -214,7 +215,7 @@ async def reduce_roles(client, message, bot_log, utcnow):
                               .format(*roles_to_keep))
 
 
-async def verify_rank(client, message, bot_log, utcnow):
+async def verify_rank(client, message, bot_log):
 
     rg = RankInfo(riot_api_key())
     message_contents = message.content[7:].lstrip().split(',')
@@ -243,7 +244,7 @@ async def verify_rank(client, message, bot_log, utcnow):
             format(rank_role, region_role))
 
 
-async def timeout_user(client, message, bot_log, utcnow):
+async def timeout_user(client, message, b_log):
 
     message_content = message.content[8:].lstrip()
     targets = []
@@ -278,14 +279,12 @@ async def timeout_user(client, message, bot_log, utcnow):
         timeout_list[t] = t_roles
         await client.replace_roles(t, timeout_role)
         await client.send_message(
-            message.channel, "{}: {} got timed out by {}".format(
-                utc, t, message.author))
+            message.channel, "{} got timed out by {}".format(
+                t, message.author))
 
-        await client.send_message(
-            bot_log, "{}: {} got timed out by {}".format(
-                utc, t, message.author))
+        await bot_logger.send_timeout_embed(client, t, message.author, b_log)
 
-async def timein_user(client, message, bot_log, utc):
+async def timein_user(client, message, b_log):
 
     message_content = message.content[8:].lstrip()
     targets = []
@@ -315,9 +314,7 @@ async def timein_user(client, message, bot_log, utc):
         t_roles = timeout_list[t]
         await client.replace_roles(t, *t_roles)
         await client.send_message(
-            message.channel, "{}:{}'s timeout was ended by {}".format(
-                utc, t.name, message.author))
-        await client.send_message(
-            bot_log, "{}:{}'s timeout was ended by {}".format(
-                utc, t.name, message.author))
+            message.channel, "{}'s timeout was ended by {}".format(
+                t.name, message.author))
 
+        await bot_logger.send_timein_embed(client, t, message.author, b_log)

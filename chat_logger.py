@@ -1,4 +1,4 @@
-# log chat to chatlog
+#!/home/deploy/bots/pvs-bot/discord/bin/python
 import discord
 import datetime
 import credentials

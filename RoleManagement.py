@@ -50,7 +50,7 @@ async def assign_role(client, message, bot_log):
     assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
                         'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC',
-                        'Support', 'OCE', 'other games']
+                        'Support', 'OCE', 'other-games']
     two_weeks = datetime.datetime.utcnow() - datetime.timedelta(days=14)
     if message.channel != discord.utils.get(message.server.channels,
                                             name='role-assignment'):
@@ -64,6 +64,8 @@ async def assign_role(client, message, bot_log):
     else:
         dis_roles = []
         for w_role in wanted_roles:
+            if w_role == 'other-games':
+                w_role = 'other games'
             discord_role = await check_role_in_server(message, w_role)
             if discord_role is not None:
                 dis_roles.append(discord_role)

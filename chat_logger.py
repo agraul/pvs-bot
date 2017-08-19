@@ -64,6 +64,7 @@ async def on_message_edit(before, after):
 
     await log_message_edit(client, before, after, chatlog, utc, forbidden)
 
+@client.event
 async def on_message_delete(message):
     bot_log = discord.utils.get(message.server.channels,
                                 name='bot-log')

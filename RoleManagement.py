@@ -306,10 +306,18 @@ async def timein_user(client, message, b_log):
 
 
 async def count_users(client, message, *args):
-    # temporarily only count everyone that has an assigned role
-
     x = 0
-    for user in message.server.members:
-        if len(user.roles) > 0:
-            x += 1
+    try:
+        y = int(message.content[6:])
+    except ValueError:
+        y = 'all'
+
+    if type(y) == int:
+        for user in message.server.members:
+            if len(user.roles) > y:
+                x += 1
+    else:
+        for user in message.server.members:
+            if len(user.roles) > 1:
+                x += 1
     await client.send_message(message.channel, "There are {} users.".format(x))

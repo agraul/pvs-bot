@@ -309,7 +309,7 @@ async def count_users(client, message, *args):
     # temporarily only count everyone that has an assigned role
 
     x = 0
-    for user in message.server.users:
+    for user in message.server.members:
         if len(user.roles) > 0:
             x += 1
     await client.send_message(message.channel, "There are {} users.".format(x))

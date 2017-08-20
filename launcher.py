@@ -40,7 +40,7 @@ async def run_op(client, message, bot_log):
     required_roles = levels[op[1]]
 
     for r in message.author.roles:
-        if r.name in required_roles:
+        if r.name.lower() in required_roles:
             await op[0](client, message, bot_log)
             success = True
             break

@@ -18,6 +18,7 @@ async def run_op(client, message, bot_log):
            'timeout': [RoleManagement.timeout_user, 'medium'],
            'verify': [RoleManagement.verify_rank, 'low'],
            'purge': [purger.purge_channel, 'high'],
+           'count': [RoleManagement.count_users, 'medium'],
           }
     # unwrap message into operation and arguments
     operation = message.content[1:]

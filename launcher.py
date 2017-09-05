@@ -6,8 +6,8 @@ import purger
 async def run_op(client, message, bot_log):
     levels = {
              'admin': ['admin'],
-             'high': ['admin', 'moderator', 'Panda bat'],
-             'medium': ['trial moderator', 'moderator', 'admin'],
+             'high': ['admin', 'moderator', 'panda bat'],
+             'medium': ['trial moderator', 'moderator', 'admin', 'panda bat'],
              'low': ['@everyone']
              }
 

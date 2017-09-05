@@ -49,7 +49,7 @@ async def assign_role(client, message, bot_log):
     assignable_roles = ['Diamond +', 'Platinum', 'Gold', 'Silver', 'Bronze',
                         'NA', 'EUW', 'EUNE', 'KR', 'TR', 'GARENA', 'NPVS',
                         'NLFG', 'Coach', 'Top', 'Jungle', 'Mid', 'ADC',
-                        'Support', 'OCE', 'other games']
+                        'Support', 'OCE', 'Other Games']
 
     assignment_channel = discord.utils.get(message.server.channels,
                                            name='role-assignment')

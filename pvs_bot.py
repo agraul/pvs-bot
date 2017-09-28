@@ -6,6 +6,7 @@ import discord
 
 import credentials
 import launcher
+import purger
 
 # logging (copied from discord.py documentation)
 logger = logging.getLogger('discord')
@@ -34,11 +35,16 @@ async def on_ready():
 async def on_message(message):
     bot_log = discord.utils.get(message.server.channels,
                                 name='bot-log')
+    role_channel = discord.utils.get(message.server.channels,
+                                     name='role-assignment')
 
     try:
         if message.content[0] == '!':
             await launcher.run_op(client, message, bot_log)
     except IndexError:
          pass
+
+    if message.channel == role_channel:
+        await purger.cleanup_role_channel(client, message)
 
 client.run(credentials.token1())

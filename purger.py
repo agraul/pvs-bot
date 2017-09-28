@@ -1,8 +1,10 @@
 import discord
 import asyncio
 
+
 def not_instructions(message):
     return message.id != '292124920417091584'
+
 
 async def purge_channel(client, message, bot_log):
     role_channel = discord.utils.get(message.server.channels,
@@ -25,7 +27,7 @@ async def purge_channel(client, message, bot_log):
     # ask for confirmation
     m = await client.send_message(
         chan, "Do you really want to purge {} messages? (yes/no)"
-            .format(num_in))
+        .format(num_in))
     check = await client.wait_for_message(timeout=10, author=message.author)
 
     if check.content.lower() in confirmed:
@@ -48,3 +50,14 @@ async def remove_command_response(client, *messages):
 
     await client.purge_from(messages[0].channel,
                             check=check_correct_id)
+
+
+async def cleanup_role_channel(client, message):
+    correct_id = message.id
+
+    def passed_message(m_to_delete):
+        return m_to_delete.id == correct_id
+
+    await asyncio.sleep(60)
+    await client.purge_from(message.channel,
+                            check=passed_message)

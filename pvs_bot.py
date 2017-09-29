@@ -1,4 +1,5 @@
 #!/home/deploy/bots/pvs-bot/discord/bin/python
+import asyncio
 import datetime
 import logging
 
@@ -21,9 +22,9 @@ logger.addHandler(handler)
 # client instance
 client = discord.Client()
 
-
 @client.event
-async def on_ready():
+@asyncio.coroutine
+def on_ready():
     print('Logged in as ')
     print(client.user.name)
     print(client.user.id)
@@ -32,7 +33,8 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
+@asyncio.coroutine
+def on_message(message):
     bot_log = discord.utils.get(message.server.channels,
                                 name='bot-log')
     role_channel = discord.utils.get(message.server.channels,
@@ -40,11 +42,11 @@ async def on_message(message):
 
     try:
         if message.content[0] == '!':
-            await launcher.run_op(client, message, bot_log)
+            yield from launcher.run_op(client, message, bot_log)
     except IndexError:
          pass
 
     if message.channel == role_channel:
-        await purger.cleanup_role_channel(client, message)
+        yield from purger.cleanup_role_channel(client, message)
 
-client.run(credentials.token1())
+client.run(credentials.token2())

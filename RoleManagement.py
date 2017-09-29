@@ -11,7 +11,8 @@ timeout_list = {}
 tier_roles = ['verified', 'diamond +', 'platinum', 'gold', 'silver', 'bronze']
 
 
-async def check_role_in_server(message, role):
+@asyncio.coroutine
+def check_role_in_server(message, role):
     """Search for role in server and return role object"""
 
     # build list of roles on the server to check against
@@ -37,7 +38,8 @@ async def check_role_in_server(message, role):
         discord_role = None
     return discord_role
 
-async def assign_role(client, message, bot_log):
+@asyncio.coroutine
+def assign_role(client, message, bot_log):
     """
     Assign a role to a user.
 
@@ -54,12 +56,12 @@ async def assign_role(client, message, bot_log):
     assignment_channel = discord.utils.get(message.server.channels,
                                            name='role-assignment')
     if message.channel != assignment_channel:
-        m = await client.send_message(message.channel,
+        m = yield from client.send_message(message.channel,
                                       'This can only be done in {}'.format(
                                           assignment_channel
                                       ))
-        await asyncio.sleep(5)
-        await purger.remove_command_response(client, message, m)
+        yield from asyncio.sleep(5)
+        yield from purger.remove_command_response(client, message, m)
         return None
 
     # strip trigger and split content
@@ -71,15 +73,15 @@ async def assign_role(client, message, bot_log):
     else:
         dis_roles = []
         for w_role in wanted_roles:
-            discord_role = await check_role_in_server(message, w_role.lstrip())
+            discord_role = yield from check_role_in_server(message, w_role.lstrip())
             if discord_role is not None:
                 dis_roles.append(discord_role)
 
         if len(dis_roles) == 0:
-            m = await client.send_message(
+            m = yield from client.send_message(
                 message.channel, "You need to provide at least one valid role.")
-            await asyncio.sleep(5)
-            await purger.remove_command_response(client, message, m)
+            yield from asyncio.sleep(5)
+            yield from purger.remove_command_response(client, message, m)
             return None
 
         # check if discovered roles is allowed to be assigned
@@ -94,13 +96,13 @@ async def assign_role(client, message, bot_log):
         if tier_role is False:
             for discord_role in dis_roles:
                 if discord_role.name in assignable_roles:
-                    await client.add_roles(user, *dis_roles)
+                    yield from client.add_roles(user, *dis_roles)
                     got_added = True
                 else:
-                    m = await client.send_message(
+                    m = yield from client.send_message(
                         "{} can't be added this way!".format(discord_role))
             if got_added is True:
-                m = await client.send_message(
+                m = yield from client.send_message(
                     message.channel, "{} got added to `".format(user)
                                      + ("{} " * len(dis_roles)).format(
                                         *dis_roles)
@@ -116,22 +118,23 @@ async def assign_role(client, message, bot_log):
                 if discord_role.name in assignable_roles:
                     new_roles.append(discord_role)
                 else:
-                    m = await client.send_message(
+                    m = yield from client.send_message(
                         "`{}` can't be added this way!".format(discord_role))
-                    await asyncio.sleep(5)
-                    await purger.remove_command_response(client, message, m)
+                    yield from asyncio.sleep(5)
+                    yield from purger.remove_command_response(client, message, m)
 
-            await client.replace_roles(user, *new_roles)
-            m = await client.send_message(
+            yield from client.replace_roles(user, *new_roles)
+            m = yield from client.send_message(
                     message.channel, "{} got added to `".format(user)
                     + ("{} " * len(dis_roles)).format(*dis_roles)
                     + "`")
 
-        await asyncio.sleep(5)
-        await purger.remove_command_response(client, message, m)
+        yield from asyncio.sleep(5)
+        yield from purger.remove_command_response(client, message, m)
 
 
-async def remove_role(client, message, bot_log):
+@asyncio.coroutine
+def remove_role(client, message, bot_log):
     """
     Remove a role from user.
 
@@ -145,22 +148,23 @@ async def remove_role(client, message, bot_log):
     user = message.author
     # TODO: ask for confirmation for some roles
 
-    discord_role = await check_role_in_server(message, role)
+    discord_role = yield from check_role_in_server(message, role)
 
     if discord_role is not None:
-        await client.remove_roles(user, discord_role)
-        m = await client.send_message(message.channel,
+        yield from client.remove_roles(user, discord_role)
+        m = yield from client.send_message(message.channel,
                                       "{} got removed from {}".format(
                                       user, discord_role))
     else:
-        m = await client.send_message(message.channel,
+        m = yield from client.send_message(message.channel,
                                       "{} is not a valid role.".format(role))
 
-    await asyncio.sleep(5)
-    await purger.remove_command_response(client, message, m)
+    yield from asyncio.sleep(5)
+    yield from purger.remove_command_response(client, message, m)
 
 
-async def reduce_roles(client, message, bot_log):
+@asyncio.coroutine
+def reduce_roles(client, message, bot_log):
     """
     Remove all (but explicitly stated) roles from another user.
 
@@ -176,9 +180,10 @@ async def reduce_roles(client, message, bot_log):
         user = discord.utils.get(message.server.members,
                                  display_name=message_contents[0])
         if user is None:
-            return await client.send_message(message.channel,
+            yield from client.send_message(message.channel,
                                              "{} not found.".format(
                                                  message_contents[0]))
+            return None
     user_roles = []
     for u_role in user.roles:
         user_roles.append(u_role)
@@ -196,11 +201,12 @@ async def reduce_roles(client, message, bot_log):
                 roles_to_keep.append(str(user_role))
             else:
                 roles_to_remove.append(user_role)
-    await client.remove_roles(user, *roles_to_remove)
+    yield from client.remove_roles(user, *roles_to_remove)
 
 
 
-async def verify_rank(client, message, bot_log):
+@asyncio.coroutine
+def verify_rank(client, message, bot_log):
 
     rg = RankInfo(riot_api_key())
     message_contents = message.content[7:].lstrip().split(',')
@@ -212,9 +218,9 @@ async def verify_rank(client, message, bot_log):
             summoner_id, message_contents[1])['pages'][0]['name']
     if summoner_first_rune_pg == 'Plats vs Silvers':
         user = message.author
-        rank_role = await check_role_in_server(message, summoner_rank)
-        verify_role = await check_role_in_server(message, 'verified')
-        region_role = await check_role_in_server(message, message_contents[1])
+        rank_role = yield from check_role_in_server(message, summoner_rank)
+        verify_role = yield from check_role_in_server(message, 'verified')
+        region_role = yield from check_role_in_server(message, message_contents[1])
         kept_roles = []
         for r in user.roles:
             if r.name.lower() not in tier_roles:
@@ -223,13 +229,14 @@ async def verify_rank(client, message, bot_log):
         kept_roles.append(verify_role)
         kept_roles.append(region_role)
         kept_roles.append(rank_role)
-        await client.replace_roles(user, *kept_roles)
-        await client.send_message(
+        yield from client.replace_roles(user, *kept_roles)
+        yield from client.send_message(
             message.channel, "Success! You have been verified ({} on {})".\
             format(rank_role, region_role))
 
 
-async def timeout_user(client, message, b_log):
+@asyncio.coroutine
+def timeout_user(client, message, b_log):
 
     message_content = message.content[8:].lstrip()
     targets = []
@@ -262,14 +269,15 @@ async def timeout_user(client, message, b_log):
         for role in t.roles:
             t_roles.append(role)
         timeout_list[t] = t_roles
-        await client.replace_roles(t, timeout_role)
-        await client.send_message(
+        yield from client.replace_roles(t, timeout_role)
+        yield from client.send_message(
             message.channel, "{} got timed out by {}".format(
                 t, message.author))
 
-        await bot_logger.send_timeout_embed(client, t, message.author, b_log)
+        yield from bot_logger.send_timeout_embed(client, t, message.author, b_log)
 
-async def timein_user(client, message, b_log):
+@asyncio.coroutine
+def timein_user(client, message, b_log):
 
     message_content = message.content[8:].lstrip()
     targets = []
@@ -297,15 +305,16 @@ async def timein_user(client, message, b_log):
         targets.append(user)
     for t in targets:
         t_roles = timeout_list[t]
-        await client.replace_roles(t, *t_roles)
-        await client.send_message(
+        yield from client.replace_roles(t, *t_roles)
+        yield from client.send_message(
             message.channel, "{}'s timeout was ended by {}".format(
                 t.name, message.author))
 
-        await bot_logger.send_timein_embed(client, t, message.author, b_log)
+        yield from bot_logger.send_timein_embed(client, t, message.author, b_log)
 
 
-async def count_users(client, message, *args):
+@asyncio.coroutine
+def count_users(client, message, *args):
     x = 0
     try:
         y = int(message.content[6:])
@@ -320,4 +329,4 @@ async def count_users(client, message, *args):
         for user in message.server.members:
             if len(user.roles) > 1:
                 x += 1
-    await client.send_message(message.channel, "There are {} users.".format(x))
+    yield from client.send_message(message.channel, "There are {} users.".format(x))
